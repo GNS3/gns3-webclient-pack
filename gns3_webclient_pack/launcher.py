@@ -143,5 +143,9 @@ if __name__ == '__main__':
     try:
         main(sys.argv[1])
     except IndexError:
-        print('usage:', __file__, '<url>', file=sys.stderr)
+        if hasattr(sys, "frozen"):
+            program = sys.executable
+        else:
+            program = __file__
+        print("usage: {}".format(program), "<url>", file=sys.stderr)
         sys.exit(1)
