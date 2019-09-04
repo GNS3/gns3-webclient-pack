@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/help.svg</file>
+        <file>icons/quit.svg</file>
+        <file>icons/reload.svg</file>
+        <file>icons/command_line.svg</file>
+        <file>icons/console_edit.svg</file>
+        <file>images/gns3_logo.png</file>
+        <file>images/gns3_icon_128x128.png</file>
+        <file>images/gns3_icon_256x256.png</file>
+        <file>images/gns3.ico</file>
+    </qresource>
+</RCC>

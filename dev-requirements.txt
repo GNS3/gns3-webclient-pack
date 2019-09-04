@@ -1,0 +1,5 @@
+-rrequirements.txt
+
+pep8==1.7.0
+pytest==4.4.1
+pytest-qt==3.2.2
