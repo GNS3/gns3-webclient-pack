@@ -214,7 +214,7 @@ if sys.platform.startswith("win"):
     }
 
     # default Windows SPICE command
-    DEFAULT_SPICE_CONSOLE_COMMAND = PRECONFIGURED_SPICE_COMMANDS['Remote Viewer']
+    DEFAULT_SPICE_COMMAND = PRECONFIGURED_SPICE_COMMANDS['Remote Viewer']
 
 elif sys.platform.startswith("darwin"):
     # Mac OS X
