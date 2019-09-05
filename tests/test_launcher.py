@@ -18,7 +18,7 @@
 import shlex
 import pytest
 from unittest.mock import patch
-from gns3_webclient_pack.launcher import main as launcher
+from gns3_webclient_pack.launcher import launcher
 from gns3_webclient_pack.qt import QtWidgets
 
 
@@ -88,3 +88,40 @@ def test_telnet_command_with_port_out_of_range_in_url(qtbot, monkeypatch):
     with pytest.raises(SystemExit):
         launcher("gns3+telnet://localhost:99999")
 
+
+def test_vnc_command_on_linux(local_config):
+
+    local_config.loadSectionSettings("CommandsSettings", {"vnc_command": "vncviewer {host} {port}"})
+    with patch('subprocess.Popen') as popen, \
+            patch('os.environ', new={}), \
+            patch('sys.platform', new="linux"):
+        launcher("gns3+vnc://localhost:6000")
+        popen.assert_called_once_with(shlex.split("vncviewer localhost 6000"), env={})
+
+
+def test_vnc_command_on_windows(local_config):
+
+    local_config.loadSectionSettings("CommandsSettings", {"vnc_command": "vncviewer {host} {port}"})
+    with patch('subprocess.Popen') as popen, \
+            patch('sys.platform', new="win"):
+        launcher("gns3+vnc://localhost:6000")
+        popen.assert_called_once_with("vncviewer localhost 6000")
+
+
+def test_spice_command_on_linux(local_config):
+
+    local_config.loadSectionSettings("CommandsSettings", {"spice_command": "remote-viewer {host} {port}"})
+    with patch('subprocess.Popen') as popen, \
+            patch('os.environ', new={}), \
+            patch('sys.platform', new="linux"):
+        launcher("gns3+spice://localhost:6000")
+        popen.assert_called_once_with(shlex.split("remote-viewer localhost 6000"), env={})
+
+
+def test_spice_command_on_windows(local_config):
+
+    local_config.loadSectionSettings("CommandsSettings", {"spice_command": "remote-viewer {host} {port}"})
+    with patch('subprocess.Popen') as popen, \
+            patch('sys.platform', new="win"):
+        launcher("gns3+spice://localhost:6000")
+        popen.assert_called_once_with("remote-viewer localhost 6000")

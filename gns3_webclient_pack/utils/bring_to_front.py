@@ -17,17 +17,13 @@
 
 import sys
 import logging
-
-if sys.platform.startswith("win"):
-    import pywintypes
-    import win32process
-    import win32gui
-    import win32con
-
 log = logging.getLogger(__name__)
 
 
 def get_windows_from_pid(pid):
+
+    import win32process
+    import win32gui
 
     def callback(hwnd, hwnds):
         if win32gui.IsWindowVisible(hwnd) and win32gui.IsWindowEnabled(hwnd):
@@ -43,6 +39,10 @@ def get_windows_from_pid(pid):
 
 def set_foreground_window(hwnd):
 
+    import pywintypes
+    import win32gui
+    import win32con
+
     try:
         if win32gui.IsIconic(hwnd):
             win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
@@ -55,5 +55,6 @@ def set_foreground_window(hwnd):
 
 def bring_window_to_front_from_pid(pid):
 
+    assert sys.platform.startswith("win") is True
     for hwnd in get_windows_from_pid(pid):
         set_foreground_window(hwnd)

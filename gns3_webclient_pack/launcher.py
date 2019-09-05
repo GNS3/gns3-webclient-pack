@@ -96,9 +96,9 @@ class Command(object):
             sys.exit(1)
 
 
-def main(argv):
+def launcher(argv):
     """
-    Entry point for the command launcher.
+    Parse the URL and launch the command.
     """
 
     try:
@@ -123,22 +123,29 @@ def main(argv):
     if url.scheme == "gns3+telnet":
         command_line = settings["telnet_command"]
         log.debug('Use telnet command: "{}"'.format(command_line))
-        command = Command(**url_data)
-        command.launch(command_line)
     elif url.scheme == "gns3+vnc":
         command_line = settings["vnc_command"]
         log.debug('Use VNC command: "{}"'.format(command_line))
-        raise NotImplementedError
     elif url.scheme == "gns3+spice":
         command_line = settings["spice_command"]
         log.debug('Use SPICE command: "{}"'.format(command_line))
-        raise NotImplementedError
     else:
         QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Protocol not found or supported in URL '{}'".format(url.geturl()))
         sys.exit(1)
 
+    if not command_line:
+        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "No command configured for protocol handler '{}'".format(url.scheme))
+        sys.exit(1)
 
-if __name__ == '__main__':
+    # launch the command
+    command = Command(**url_data)
+    command.launch(command_line)
+
+
+def main():
+    """
+    Entry point for GNS3 WebClient launcher
+    """
 
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon(":/images/gns3.ico"))
@@ -147,11 +154,15 @@ if __name__ == '__main__':
     print("GNS3 WebClient pack version {}".format(__version__))
     print("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
     try:
-        main(sys.argv[1])
+        launcher(sys.argv[1])
     except IndexError:
         if hasattr(sys, "frozen"):
             program = sys.executable
         else:
             program = __file__
-        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "usage: {}".format(program), "<url>")
+        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "usage: {} <url>".format(program))
         sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()

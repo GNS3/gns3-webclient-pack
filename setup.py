@@ -17,24 +17,26 @@
 
 import sys
 from setuptools import setup, find_packages
+from gns3_webclient_pack.version import __version__
 
 # we only support Python 3 version >= 3.4
 if len(sys.argv) >= 2 and sys.argv[1] == "install" and sys.version_info < (3, 4):
     raise SystemExit("Python 3.4 or higher is required")
 
 setup(
-    name="gns3-client-pack",
-    version=__import__("gns3_webclient_pack").__version__,
+    name="gns3-webclient-pack",
+    version=__version__,
     url="http://github.com/GNS3/gns3-client-pack",
     license="GNU General Public License v3 (GPLv3)",
     author="Jeremy Grossmann",
     author_email="developers@gns3.net",
-    description="GNS3 client pack to use with the GNS3 web interface",
-    long_description=open("README.rst", "r").read(),
+    description="GNS3 WebClient pack to use with the GNS3 web interface",
+    long_description=open("README.md", "r").read(),
     install_requires=open("requirements.txt", "r").read().splitlines(),
+
     entry_points={
         "gui_scripts": [
-            "gns3-webclient-config = gns3_webclient_pack.main:main"
+            "gns3-webclient-config = gns3_webclient_pack.main:main",
             "gns3-webclient-launcher = gns3_webclient_pack.launcher:main"
         ]
     },
