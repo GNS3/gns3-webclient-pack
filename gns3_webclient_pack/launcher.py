@@ -31,6 +31,7 @@ except ImportError:
 from gns3_webclient_pack.local_config import LocalConfig
 from gns3_webclient_pack.settings import COMMANDS_SETTINGS
 from gns3_webclient_pack.version import __version__
+from gns3_webclient_pack.utils.bring_to_front import bring_window_to_front_from_pid
 
 import logging
 log = logging.getLogger(__name__)
@@ -55,7 +56,7 @@ class Command(object):
 
         if sys.platform.startswith("win"):
             # use the string on Windows
-            subprocess.Popen(command)
+            process = subprocess.Popen(command)
         else:
             # use arguments on other platforms
             try:
@@ -63,7 +64,11 @@ class Command(object):
             except ValueError as e:
                 QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Cannot parse '{}': {}".format(command, e))
                 sys.exit(1)
-            subprocess.Popen(args, env=os.environ)
+            process = subprocess.Popen(args, env=os.environ)
+
+        if sys.platform.startswith("win"):
+            # bring the launched application to the front (Windows only)
+            bring_window_to_front_from_pid(process.pid)
 
     def launch(self, command_line):
         """
@@ -148,5 +153,5 @@ if __name__ == '__main__':
             program = sys.executable
         else:
             program = __file__
-        print("usage: {}".format(program), "<url>", file=sys.stderr)
+        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "usage: {}".format(program), "<url>")
         sys.exit(1)

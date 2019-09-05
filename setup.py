@@ -42,7 +42,7 @@ setup(
     include_package_data=True,
     platforms="any",
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Environment :: X11 Applications :: Qt",
         "Intended Audience :: Information Technology",
         "Topic :: System :: Networking",
