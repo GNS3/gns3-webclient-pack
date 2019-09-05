@@ -24,7 +24,7 @@ import urllib.parse
 import datetime
 
 try:
-    from gns3_webclient_pack.qt import QtWidgets
+    from gns3_webclient_pack.qt import QtGui, QtWidgets
 except ImportError:
     raise SystemExit("Can't import Qt modules: Qt and/or PyQt is probably not installed correctly...")
 
@@ -136,10 +136,11 @@ def main(argv):
 if __name__ == '__main__':
 
     app = QtWidgets.QApplication(sys.argv)
+    app.setWindowIcon(QtGui.QIcon(":/images/gns3.ico"))
     current_year = datetime.date.today().year
     #logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(levelname)s %(filename)s %(lineno)s - %(message)s")
     print("GNS3 WebClient pack version {}".format(__version__))
-    print("Copyright (c) 2018-{} GNS3 Technologies Inc.".format(current_year))
+    print("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
     try:
         main(sys.argv[1])
     except IndexError:

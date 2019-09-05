@@ -118,7 +118,7 @@ def main():
 
     current_year = datetime.date.today().year
     log.info("GNS3 WebClient pack version {}".format(__version__))
-    log.info("Copyright (c) 2019-{} GNS3 Technologies Inc.".format(current_year))
+    log.info("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
 
     # We disallow to run GNS3 from outside the /Applications folder to avoid
     # issue when people run GNS3 from the .dmg
