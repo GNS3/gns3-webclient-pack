@@ -66,7 +66,7 @@ class Command(object):
                 sys.exit(1)
             process = subprocess.Popen(args, env=os.environ)
 
-        if sys.platform.startswith("win"):
+        if sys.platform.startswith("win") and not hasattr(sys, '_called_from_test'):
             # bring the launched application to the front (Windows only)
             bring_window_to_front_from_pid(process.pid)
 
