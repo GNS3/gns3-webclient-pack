@@ -28,6 +28,7 @@ try:
 except ImportError:
     raise SystemExit("Can't import Qt modules: Qt and/or PyQt is probably not installed correctly...")
 
+from gns3_webclient_pack.main import main as configurator
 from gns3_webclient_pack.local_config import LocalConfig
 from gns3_webclient_pack.settings import COMMANDS_SETTINGS
 from gns3_webclient_pack.version import __version__
@@ -147,6 +148,11 @@ def main():
     Entry point for GNS3 WebClient launcher
     """
 
+    # Sometimes (for example at first launch) the OSX app service launcher add
+    # an extra argument starting with -psn_. We filter it
+    if sys.platform.startswith("darwin"):
+        sys.argv = [a for a in sys.argv if not a.startswith("-psn_")]
+
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon(":/images/gns3.ico"))
     current_year = datetime.date.today().year
@@ -156,7 +162,12 @@ def main():
     try:
         launcher(sys.argv[1])
     except IndexError:
-        if hasattr(sys, "frozen"):
+        if sys.platform.startswith("darwin") and hasattr(sys, "frozen"):
+            # execute the webclient configurator on macOS when there is no params
+            # since there can be only one main executable in an App.
+            configurator()
+            sys.exit(0)
+        elif hasattr(sys, "frozen"):
             program = sys.executable
         else:
             program = __file__
