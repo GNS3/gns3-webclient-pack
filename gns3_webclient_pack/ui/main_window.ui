@@ -5,27 +5,25 @@
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1017</width>
-    <height>386</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>GNS3 WebClient pack</string>
   </property>
   <widget class="QWidget" name="uiCentralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QLabel" name="uiTelnetCommandLabel">
-      <property name="text">
-       <string>Telnet command:</string>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="7" column="0">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-     </widget>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
     </item>
-    <item>
+    <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_9">
       <item>
        <widget class="QLineEdit" name="uiTelnetCommandLineEdit">
@@ -53,7 +51,7 @@
         </property>
         <property name="icon">
          <iconset resource="../../resources/resources.qrc">
-          <normaloff>:/icons/command_line.svg</normaloff>:/icons/command_line.svg</iconset>
+          <normaloff>:/icons/config.svg</normaloff>:/icons/config.svg</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -65,14 +63,14 @@
       </item>
      </layout>
     </item>
-    <item>
+    <item row="2" column="0">
      <widget class="QLabel" name="uiVNCCommandLabel">
       <property name="text">
        <string>VNC command:</string>
       </property>
      </widget>
     </item>
-    <item>
+    <item row="3" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_8">
       <item>
        <widget class="QLineEdit" name="uiVNCCommandLineEdit">
@@ -103,20 +101,27 @@
         </property>
         <property name="icon">
          <iconset resource="../../resources/resources.qrc">
-          <normaloff>:/icons/command_line.svg</normaloff>:/icons/command_line.svg</iconset>
+          <normaloff>:/icons/config.svg</normaloff>:/icons/config.svg</iconset>
         </property>
        </widget>
       </item>
      </layout>
     </item>
-    <item>
+    <item row="4" column="0">
      <widget class="QLabel" name="uiSPICECommandLabel">
       <property name="text">
        <string>SPICE command:</string>
       </property>
      </widget>
     </item>
-    <item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="uiTelnetCommandLabel">
+      <property name="text">
+       <string>Telnet command:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_10">
       <item>
        <widget class="QLineEdit" name="uiSPICECommandLineEdit">
@@ -147,34 +152,21 @@
         </property>
         <property name="icon">
          <iconset resource="../../resources/resources.qrc">
-          <normaloff>:/icons/command_line.svg</normaloff>:/icons/command_line.svg</iconset>
+          <normaloff>:/icons/config.svg</normaloff>:/icons/config.svg</iconset>
         </property>
        </widget>
       </item>
      </layout>
     </item>
-    <item>
+    <item row="6" column="0">
      <widget class="QDialogButtonBox" name="uiButtonBox">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <property name="standardButtons">
-       <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::Help|QDialogButtonBox::Reset</set>
+       <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::Reset</set>
       </property>
      </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
     </item>
    </layout>
    <zorder>uiVNCCommandLabel</zorder>
@@ -188,7 +180,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1017</width>
+     <width>913</width>
      <height>42</height>
     </rect>
    </property>

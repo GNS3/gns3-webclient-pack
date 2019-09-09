@@ -44,10 +44,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._settings = {}
         self._commands_settings = {}
         self.setupUi(self)
+        self.resize(self.width(), self.minimumHeight())
 
         MainWindow._instance = self
         self._local_config = LocalConfig.instance()
         self._loadSettings()
+        self._commands_saved = True
 
         # restore the geometry and state of the main window.
         self.restoreGeometry(QtCore.QByteArray().fromBase64(self._settings["geometry"].encode()))
@@ -68,11 +70,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.uiTelnetCommandPushButton.clicked.connect(self._telnetCommandSlot)
         self.uiVNCCommandPushButton.clicked.connect(self._vncCommandSlot)
         self.uiSPICECommandPushButton.clicked.connect(self._spiceCommandSlot)
+
         self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Close).clicked.connect(self.close)
         self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self._applySlot)
+        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Reset).clicked.connect(self._resetSlot)
 
         # custom button icons
-        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Help).setIcon(QtGui.QIcon(":/icons/help.svg"))
         self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Reset).setIcon(QtGui.QIcon(":/icons/reload.svg"))
 
     def _loadSettings(self):
@@ -85,6 +88,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.uiTelnetCommandLineEdit.setText(self._commands_settings["telnet_command"])
         self.uiVNCCommandLineEdit.setText(self._commands_settings["vnc_command"])
         self.uiSPICECommandLineEdit.setText(self._commands_settings["spice_command"])
+        self.uiTelnetCommandLineEdit.textChanged.connect(self._commandChangedSlot)
+        self.uiVNCCommandLineEdit.textChanged.connect(self._commandChangedSlot)
+        self.uiSPICECommandLineEdit.textChanged.connect(self._commandChangedSlot)
 
     def settings(self):
         """
@@ -129,6 +135,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         dialog.show()
         dialog.exec_()
 
+    def _commandChangedSlot(self):
+        """
+        Slot to detect changes to commands.
+        """
+
+        self._commands_saved = False
+
     def _telnetCommandSlot(self):
         """
         Slot to set a chosen Telnet command.
@@ -160,12 +173,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.uiSPICECommandLineEdit.setText(cmd)
 
     def _applySlot(self):
+        """
+        Save the commands in the settings file.
+        """
 
         self._commands_settings["telnet_command"] = self.uiTelnetCommandLineEdit.text().strip()
         self._commands_settings["vnc_command"] = self.uiVNCCommandLineEdit.text().strip()
         self._commands_settings["spice_command"] = self.uiSPICECommandLineEdit.text().strip()
         LocalConfig.instance().saveSectionSettings("CommandsSettings", self._commands_settings)
         self.setSettings(self._settings)
+        self._commands_saved = True
+
+    def _resetSlot(self):
+        """
+        Reset the commands to their default value.
+        """
+
+        self.uiTelnetCommandLineEdit.setText(COMMANDS_SETTINGS["telnet_command"])
+        self.uiVNCCommandLineEdit.setText(COMMANDS_SETTINGS["vnc_command"])
+        self.uiSPICECommandLineEdit.setText(COMMANDS_SETTINGS["spice_command"])
 
     def closeEvent(self, event):
         """
@@ -173,6 +199,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         :param event: QCloseEvent
         """
+
+        if self._commands_saved is False:
+            reply = QtWidgets.QMessageBox.question(self, "Unsaved changes", "Save changes before closing?",
+                                                   QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Cancel)
+            if reply == QtWidgets.QMessageBox.Yes:
+                self._applySlot()
+            elif reply == QtWidgets.QMessageBox.Cancel:
+                event.ignore()
+                return
 
         self._settings["geometry"] = bytes(self.saveGeometry().toBase64()).decode()
         self._settings["state"] = bytes(self.saveState().toBase64()).decode()

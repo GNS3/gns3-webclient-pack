@@ -13,15 +13,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_uiCommandDialog(object):
     def setupUi(self, uiCommandDialog):
         uiCommandDialog.setObjectName("uiCommandDialog")
-        uiCommandDialog.resize(641, 319)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(uiCommandDialog.sizePolicy().hasHeightForWidth())
-        uiCommandDialog.setSizePolicy(sizePolicy)
+        uiCommandDialog.resize(685, 377)
         uiCommandDialog.setModal(True)
         self.verticalLayout = QtWidgets.QVBoxLayout(uiCommandDialog)
-        self.verticalLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.verticalLayout.setObjectName("verticalLayout")
         self.label_2 = QtWidgets.QLabel(uiCommandDialog)
         self.label_2.setObjectName("label_2")

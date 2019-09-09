@@ -6,15 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>641</width>
-    <height>319</height>
+    <width>685</width>
+    <height>377</height>
    </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Command</string>
@@ -23,9 +17,6 @@
    <bool>true</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="sizeConstraint">
-    <enum>QLayout::SetFixedSize</enum>
-   </property>
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">

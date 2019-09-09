@@ -29,6 +29,7 @@ class AboutDialog(QtWidgets.QDialog, Ui_AboutDialog):
 
         super().__init__(parent)
         self.setupUi(self)
+        self.adjustSize()
 
         # dynamically add the current version number
         text = self.uiAboutTextLabel.text()

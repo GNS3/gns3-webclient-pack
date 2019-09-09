@@ -42,9 +42,10 @@ class CommandDialog(QtWidgets.QDialog, Ui_uiCommandDialog):
         """
         super().__init__(parent)
         self.setupUi(self)
+        self.resize(self.width(), self.minimumHeight())
+
         self._console_type = console_type
         self._current = current
-
         self._settings = LocalConfig.instance().loadSectionSettings("CustomCommands", CUSTOM_COMMANDS_SETTINGS)
 
         self.uiCommandComboBox.currentIndexChanged.connect(self.commandComboBoxCurrentIndexChangedSlot)
@@ -85,7 +86,7 @@ class CommandDialog(QtWidgets.QDialog, Ui_uiCommandDialog):
         Shows the help for this dialog
         """
 
-        help_text = """The following variables are replaced by GNS3:
+        help_text = """The following variables will be replaced before executing a command:
 
 {host}: IP address or hostname
 {port}: port number
@@ -143,8 +144,8 @@ class CommandDialog(QtWidgets.QDialog, Ui_uiCommandDialog):
         dialog = CommandDialog(parent, console_type=console_type, current=current)
         dialog.show()
         if dialog.exec_():
-            return (True, dialog.uiCommandPlainTextEdit.toPlainText().replace("\n", " "))
-        return (False, None)
+            return True, dialog.uiCommandPlainTextEdit.toPlainText().replace("\n", " ")
+        return False, None
 
 
 if __name__ == '__main__':
