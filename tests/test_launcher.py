@@ -18,7 +18,7 @@
 import shlex
 import pytest
 from unittest.mock import patch
-from gns3_webclient_pack.launcher import launcher
+from gns3_webclient_pack.launcher import launcher, LauncherError
 from gns3_webclient_pack.qt import QtWidgets
 
 
@@ -41,15 +41,31 @@ def test_telnet_command_on_windows(local_config):
         popen.assert_called_once_with("telnet localhost 6000")
 
 
-def test_telnet_command_with_params(local_config):
+def test_telnet_command_no_port_on_windows(local_config):
 
-    local_config.loadSectionSettings("CommandsSettings", {"telnet_command": "telnet {host} {port} {name} {project_id} {node_id} {display} {url}"})
+    local_config.loadSectionSettings("CommandsSettings", {"telnet_command": "telnet {host} {port}"})
+    with patch('subprocess.Popen') as popen, \
+            patch('sys.platform', new="win"):
+        launcher("gns3+telnet://localhost")
+        popen.assert_called_once_with("telnet localhost")
+
+
+def test_vnc_command_with_params(local_config):
+
+    local_config.loadSectionSettings("CommandsSettings", {"vnc_command": "vncviewer {host} {port} {name} {project_id} {node_id} {display} {url}"})
     with patch('subprocess.Popen') as popen, \
             patch('os.environ', new={}), \
             patch('sys.platform', new="linux"):
-        url = "gns3+telnet://localhost:6000?name=R1&project_id=1234&node_id=5678&display=:1"
+        url = "gns3+vnc://localhost:5901?name=R1&project_id=1234&node_id=5678"
         launcher(url)
-        popen.assert_called_once_with(shlex.split("telnet localhost 6000 R1 1234 5678 :1 {}".format(url)), env={})
+        popen.assert_called_once_with(shlex.split("vncviewer localhost 5901 R1 1234 5678 1 {}".format(url)), env={})
+
+
+def test_vnc_command_with_invalid_port(qtbot, monkeypatch):
+
+    monkeypatch.setattr(QtWidgets.QMessageBox, "critical", lambda *args: QtWidgets.QMessageBox.Ok)
+    with pytest.raises(LauncherError):
+        launcher("gns3+vnc://localhost:2000")
 
 
 def test_telnet_command_with_non_ascii_characters(local_config):
@@ -65,27 +81,27 @@ def test_telnet_command_with_non_ascii_characters(local_config):
 def test_telnet_command_with_popen_issues(qtbot, monkeypatch):
     with patch('subprocess.Popen', side_effect=OSError("Dummy")):
         monkeypatch.setattr(QtWidgets.QMessageBox, "critical", lambda *args: QtWidgets.QMessageBox.Ok)
-        with pytest.raises(SystemExit):
+        with pytest.raises(LauncherError):
             launcher("gns3+telnet://localhost:6000")
 
 
 def test_telnet_command_with_missing_scheme_in_url(qtbot, monkeypatch):
 
     monkeypatch.setattr(QtWidgets.QMessageBox, "critical", lambda *args: QtWidgets.QMessageBox.Ok)
-    with pytest.raises(SystemExit):
+    with pytest.raises(LauncherError):
         launcher("localhost:6000")
 
 
 def test_telnet_command_with_incomplete_url(qtbot, monkeypatch):
 
     monkeypatch.setattr(QtWidgets.QMessageBox, "critical", lambda *args: QtWidgets.QMessageBox.Ok)
-    with pytest.raises(SystemExit):
+    with pytest.raises(LauncherError):
         launcher("gns3+telnet")
 
 
 def test_telnet_command_with_port_out_of_range_in_url(qtbot, monkeypatch):
     monkeypatch.setattr(QtWidgets.QMessageBox, "critical", lambda *args: QtWidgets.QMessageBox.Ok)
-    with pytest.raises(SystemExit):
+    with pytest.raises(LauncherError):
         launcher("gns3+telnet://localhost:99999")
 
 

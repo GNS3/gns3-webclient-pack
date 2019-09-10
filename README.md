@@ -24,7 +24,7 @@ URLs can include the following parameters:
 
 **VNC console**
 
-`gns3+vnc://localhost:2900`
+`gns3+vnc://localhost:5901`
 
 **SPICE console**
 

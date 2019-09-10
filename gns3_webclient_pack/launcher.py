@@ -38,6 +38,21 @@ import logging
 log = logging.getLogger(__name__)
 
 
+class LauncherError(Exception):
+
+    def __init__(self, message):
+        super().__init__(message)
+        if isinstance(message, Exception):
+            message = str(message)
+        self._message = message
+
+    def __repr__(self):
+        return self._message
+
+    def __str__(self):
+        return self._message
+
+
 class Command(object):
 
     def __init__(self, host, port, path, params, url):
@@ -63,8 +78,8 @@ class Command(object):
             try:
                 args = shlex.split(command)
             except ValueError as e:
-                QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Cannot parse '{}': {}".format(command, e))
-                sys.exit(1)
+                raise LauncherError("Cannot parse '{}': {}".format(command, e))
+
             process = subprocess.Popen(args, env=os.environ)
 
         if sys.platform.startswith("win") and not hasattr(sys, '_called_from_test'):
@@ -80,21 +95,26 @@ class Command(object):
 
         # replace the place-holders by the actual values
         command = command_line.replace("{host}", self._host)
-        command = command.replace("{port}", self._port)
+        command = command.replace("{port}", str(self._port))
         command = command.replace("{url}", self._url)
         command = command.replace("{name}", self._params.get("name", "").replace('"', '\\"'))
+
+        if "{display}" in command_line:
+            if not self._url.startswith("gns3+vnc"):
+                raise LauncherError("The {{display}} parameter is only supported for the gns3+vnc protocol scheme")
+            else:
+                command = command.replace("{display}", str(self._port - 5900))
+
         try:
             # replace the other params
             command = command.format(**self._params)
         except KeyError as e:
-            QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "{} could not be replaced in command '{}'".format(e, command))
-            sys.exit(1)
+            raise LauncherError("{} could not be replaced in command '{}'".format(e, command))
 
         try:
             self._exec_command(command.strip())
         except (OSError, subprocess.SubprocessError) as e:
-            QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Cannot start command  '{}': {}".format(command, e))
-            sys.exit(1)
+            raise LauncherError("Cannot start command  '{}': {}".format(command, e))
 
 
 def launcher(argv):
@@ -104,11 +124,12 @@ def launcher(argv):
 
     try:
         log.debug('Parsing URL "{}"'.format(argv))
+
         url = urllib.parse.urlparse(argv)
         url_data = {
             "url": url.geturl(),
             "host": url.hostname or "localhost",
-            "port": str(url.port) or "",
+            "port": url.port or "",
             "path": url.path.lstrip("/") or "",
             "params": {}
         }
@@ -116,8 +137,7 @@ def launcher(argv):
             params = urllib.parse.parse_qs(url.query, keep_blank_values=True, strict_parsing=True)
             url_data["params"] = {k: v[0] for k, v in params.items()}
     except ValueError as e:
-        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Cannot parse URL '{}': {}".format(url.geturl(), e))
-        sys.exit(1)
+        raise LauncherError("Cannot parse URL '{}': {}".format(argv, e))
 
     local_config = LocalConfig.instance()
     settings = local_config.loadSectionSettings("CommandsSettings", COMMANDS_SETTINGS)
@@ -125,18 +145,18 @@ def launcher(argv):
         command_line = settings["telnet_command"]
         log.debug('Use telnet command: "{}"'.format(command_line))
     elif url.scheme == "gns3+vnc":
+        if url.port and url.port < 5900:
+            raise LauncherError("VNC requires a port superior or equal to 5900, current port is '{}'".format(url.port))
         command_line = settings["vnc_command"]
         log.debug('Use VNC command: "{}"'.format(command_line))
     elif url.scheme == "gns3+spice":
         command_line = settings["spice_command"]
         log.debug('Use SPICE command: "{}"'.format(command_line))
     else:
-        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Protocol not found or supported in URL '{}'".format(url.geturl()))
-        sys.exit(1)
+        raise LauncherError("Protocol not found or supported in URL '{}'".format(url.geturl()))
 
     if not command_line:
-        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "No command configured for protocol handler '{}'".format(url.scheme))
-        sys.exit(1)
+        raise LauncherError("No command configured for protocol handler '{}'".format(url.scheme))
 
     # launch the command
     command = Command(**url_data)
@@ -173,7 +193,9 @@ def main():
             program = __file__
         QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "usage: {} <url>".format(program))
         sys.exit(1)
-
+    except LauncherError as e:
+        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "{}".format(e))
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
