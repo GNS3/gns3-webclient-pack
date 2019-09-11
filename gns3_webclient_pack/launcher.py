@@ -172,30 +172,31 @@ def main():
     # an extra argument starting with -psn_. We filter it
     if sys.platform.startswith("darwin"):
         sys.argv = [a for a in sys.argv if not a.startswith("-psn_")]
+        if hasattr(sys, "frozen") and not len(sys.argv):
+            # execute the WebClient configurator on macOS when there is no params
+            # since there can be only one main executable in an App.
+            configurator()
+            return
 
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon(":/images/gns3.ico"))
     current_year = datetime.date.today().year
-    #logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(levelname)s %(filename)s %(lineno)s - %(message)s")
-    print("GNS3 WebClient pack version {}".format(__version__))
+    print("GNS3 WebClient launcher version {}".format(__version__))
     print("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
     try:
+        print('Launching URL "{}"'.format(sys.argv[1]))
         launcher(sys.argv[1])
     except IndexError:
-        if sys.platform.startswith("darwin") and hasattr(sys, "frozen"):
-            # execute the webclient configurator on macOS when there is no params
-            # since there can be only one main executable in an App.
-            configurator()
-            sys.exit(0)
-        elif hasattr(sys, "frozen"):
+        if hasattr(sys, "frozen"):
             program = sys.executable
         else:
             program = __file__
         QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "usage: {} <url>".format(program))
-        sys.exit(1)
+        raise SystemExit("usage: {} <url>".format(program))
     except LauncherError as e:
         QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "{}".format(e))
-        sys.exit(1)
+        raise SystemExit("{}".format(e))
+
 
 if __name__ == '__main__':
     main()
