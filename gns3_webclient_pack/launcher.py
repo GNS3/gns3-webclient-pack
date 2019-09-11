@@ -163,6 +163,11 @@ def launcher(argv):
     command.launch(command_line)
 
 
+def test(url):
+
+    QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Launched with {}".format(url))
+
+
 def main():
     """
     Entry point for GNS3 WebClient launcher
@@ -170,19 +175,22 @@ def main():
 
     # Sometimes (for example at first launch) the OSX app service launcher add
     # an extra argument starting with -psn_. We filter it
+
     if sys.platform.startswith("darwin"):
+        QtGui.QDesktopServices.setUrlHandler("gns3+telnet", test)
         sys.argv = [a for a in sys.argv if not a.startswith("-psn_")]
-        if hasattr(sys, "frozen") and not len(sys.argv):
+        if hasattr(sys, "frozen") and not sys.argv:
             # execute the WebClient configurator on macOS when there is no params
             # since there can be only one main executable in an App.
             configurator()
-            return
+            sys.exit(0)
 
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon(":/images/gns3.ico"))
     current_year = datetime.date.today().year
     print("GNS3 WebClient launcher version {}".format(__version__))
     print("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
+
     try:
         print('Launching URL "{}"'.format(sys.argv[1]))
         launcher(sys.argv[1])
