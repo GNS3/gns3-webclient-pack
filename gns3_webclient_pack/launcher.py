@@ -24,7 +24,7 @@ import urllib.parse
 import datetime
 
 try:
-    from gns3_webclient_pack.qt import QtGui, QtWidgets, QtTest
+    from gns3_webclient_pack.qt import QtCore, QtGui, QtWidgets
 except ImportError:
     raise SystemExit("Can't import Qt modules: Qt and/or PyQt is probably not installed correctly...")
 
@@ -192,9 +192,17 @@ def main():
 
         QtGui.QDesktopServices.setUrlHandler("gns3+telnet", on_request)
         app.urlOpenedSignal.connect(on_request)
+        app.processEvents()
 
-        QtTest.QSignalSpy(app.urlOpenedSignal).wait()
-        #app.processEvents()
+        loop = QtCore.QEventLoop()
+        app.urlOpenedSignal.connect(loop.quit)
+
+        timeout = 5 # wait for 5 seconds
+        QtCore.QTimer.singleShot(timeout * 1000, loop.quit)
+
+        if not loop.isRunning():
+            loop.exec_()
+
 
     current_year = datetime.date.today().year
     print("GNS3 WebClient launcher version {}".format(__version__))
