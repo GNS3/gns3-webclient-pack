@@ -197,7 +197,7 @@ def main():
     print("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
 
     try:
-        if app.open_file_at_startup:
+        if app.open_url_at_startup:
             url = app.open_url_at_startup
         elif url_open_requests:
             url = url_open_requests.pop()
