@@ -24,7 +24,7 @@ import urllib.parse
 import datetime
 
 try:
-    from gns3_webclient_pack.qt import QtGui, QtWidgets
+    from gns3_webclient_pack.qt import QtGui, QtWidgets, QtTest
 except ImportError:
     raise SystemExit("Can't import Qt modules: Qt and/or PyQt is probably not installed correctly...")
 
@@ -177,7 +177,7 @@ def main():
     app = Application(sys.argv)
 
     url_open_requests = []
-    if sys.platform.startswith("darwin"):
+    if sys.platform.startswith("linux"):
 
         # intercept any QFileOpenEvent requests until the app is fully initialized.
         # NOTE: The QApplication must have the executable ($0) and filename
@@ -187,10 +187,14 @@ def main():
 
         def on_request(url):
             log.info("Received an file open request %s", url)
+            QtWidgets.QMessageBox.information(None, "GNS3 Command launcher", "Received URL".format(url))
             url_open_requests.append(url)
 
+        QtGui.QDesktopServices.setUrlHandler("gns3+telnet", on_request)
         app.urlOpenedSignal.connect(on_request)
-        app.processEvents()
+
+        QtTest.QSignalSpy(app.urlOpenedSignal).wait()
+        #app.processEvents()
 
     current_year = datetime.date.today().year
     print("GNS3 WebClient launcher version {}".format(__version__))
@@ -201,9 +205,10 @@ def main():
             url = app.open_url_at_startup
         elif url_open_requests:
             url = url_open_requests.pop()
-        elif sys.platform.startswith("darwin") and hasattr(sys, "frozen") and not sys.argv:
+        elif sys.platform.startswith("darwin") and not sys.argv:
             # execute the WebClient configurator on macOS when there is no params
             # since there can be only one main executable in an App.
+            QtWidgets.QMessageBox.information(None, "GNS3 Command launcher", "Execute configurator")
             configurator()
             return
         else:

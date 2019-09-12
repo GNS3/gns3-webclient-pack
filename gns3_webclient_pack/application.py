@@ -57,8 +57,9 @@ class Application(QtWidgets.QApplication):
         # Handle QFileOpenEvent on macOS to received an URL
         # The URL is not passed in sys.argv on mac
         if sys.platform.startswith("darwin"):
-            if isinstance(event, QtGui.QFileOpenEvent) and event.url():
+            if isinstance(event, QtGui.QFileOpenEvent) and not event.url().isEmpty():
                 url = event.url().toString()
                 self.open_url_at_startup = url
                 self.urlOpenedSignal.emit(url)
+                return True
         return super().event(event)
