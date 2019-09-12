@@ -55,9 +55,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.restoreGeometry(QtCore.QByteArray().fromBase64(self._settings["geometry"].encode()))
         self.restoreState(QtCore.QByteArray().fromBase64(self._settings["state"].encode()))
 
-        # set the window icon
-        self.setWindowIcon(QtGui.QIcon(":/images/gns3.ico"))
-
         # load initial stuff once the event loop isn't busy
         QtCore.QTimer.singleShot(0, self._startupLoading)
 

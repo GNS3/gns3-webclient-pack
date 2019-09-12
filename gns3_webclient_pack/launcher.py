@@ -33,6 +33,7 @@ from gns3_webclient_pack.local_config import LocalConfig
 from gns3_webclient_pack.settings import COMMANDS_SETTINGS
 from gns3_webclient_pack.version import __version__
 from gns3_webclient_pack.utils.bring_to_front import bring_window_to_front_from_pid
+from gns3_webclient_pack.application import Application
 
 import logging
 log = logging.getLogger(__name__)
@@ -163,11 +164,6 @@ def launcher(argv):
     command.launch(command_line)
 
 
-def test(url):
-
-    QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Launched with {}".format(url))
-
-
 def main():
     """
     Entry point for GNS3 WebClient launcher
@@ -175,25 +171,45 @@ def main():
 
     # Sometimes (for example at first launch) the OSX app service launcher add
     # an extra argument starting with -psn_. We filter it
-
     if sys.platform.startswith("darwin"):
-        QtGui.QDesktopServices.setUrlHandler("gns3+telnet", test)
         sys.argv = [a for a in sys.argv if not a.startswith("-psn_")]
-        if hasattr(sys, "frozen") and not sys.argv:
-            # execute the WebClient configurator on macOS when there is no params
-            # since there can be only one main executable in an App.
-            configurator()
-            sys.exit(0)
 
-    app = QtWidgets.QApplication(sys.argv)
-    app.setWindowIcon(QtGui.QIcon(":/images/gns3.ico"))
+    app = Application(sys.argv)
+
+    url_open_requests = []
+    if sys.platform.startswith("darwin"):
+
+        # intercept any QFileOpenEvent requests until the app is fully initialized.
+        # NOTE: The QApplication must have the executable ($0) and filename
+        # arguments passed in argv otherwise the FileOpen events are
+        # triggered for them (this is done by Cocoa, but QApplication filters
+        # them out if passed in argv)
+
+        def on_request(url):
+            log.info("Received an file open request %s", url)
+            url_open_requests.append(url)
+
+        app.urlOpenedSignal.connect(on_request)
+        app.processEvents()
+
     current_year = datetime.date.today().year
     print("GNS3 WebClient launcher version {}".format(__version__))
     print("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
 
     try:
-        print('Launching URL "{}"'.format(sys.argv[1]))
-        launcher(sys.argv[1])
+        if app.open_file_at_startup:
+            url = app.open_url_at_startup
+        elif url_open_requests:
+            url = url_open_requests.pop()
+        elif sys.platform.startswith("darwin") and hasattr(sys, "frozen") and not sys.argv:
+            # execute the WebClient configurator on macOS when there is no params
+            # since there can be only one main executable in an App.
+            configurator()
+            return
+        else:
+            url = sys.argv[1]
+        print('Launching URL "{}"'.format(url))
+        launcher(url)
     except IndexError:
         if hasattr(sys, "frozen"):
             program = sys.executable

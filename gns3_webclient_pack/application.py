@@ -26,7 +26,8 @@ log = logging.getLogger(__name__)
 
 
 class Application(QtWidgets.QApplication):
-    file_open_signal = QtCore.pyqtSignal(str)
+
+    urlOpenedSignal = QtCore.pyqtSignal(str)
 
     def __init__(self, argv, hdpi=True):
 
@@ -46,15 +47,18 @@ class Application(QtWidgets.QApplication):
         self.setApplicationName("GNS3 WebClient pack")
         self.setApplicationVersion(__version__)
 
-        # File path if we have received the path to
-        # a file on system via an OSX event
-        self.open_file_at_startup = None
+        # set the window icon
+        self.setWindowIcon(QtGui.QIcon(":/images/gns3.ico"))
+
+        # URL if we have received one via an OSX event
+        self.open_url_at_startup = None
 
     def event(self, event):
-        # When you double click file you receive an event
-        # and not the file as command line parameter
+        # Handle QFileOpenEvent on macOS to received an URL
+        # The URL is not passed in sys.argv on mac
         if sys.platform.startswith("darwin"):
-            if isinstance(event, QtGui.QFileOpenEvent):
-                self.open_file_at_startup = str(event.file())
-                self.file_open_signal.emit(str(event.file()))
+            if isinstance(event, QtGui.QFileOpenEvent) and event.url():
+                url = event.url().toString()
+                self.open_url_at_startup = url
+                self.urlOpenedSignal.emit(url)
         return super().event(event)
