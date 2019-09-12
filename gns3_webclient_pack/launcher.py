@@ -186,44 +186,34 @@ def main():
         # them out if passed in argv)
 
         def on_request(url):
-            log.info("Received an file open request %s", url)
-            QtWidgets.QMessageBox.information(None, "GNS3 Command launcher", "Received URL: {}".format(url))
             url_open_requests.append(url)
 
-        def on_request_2(url):
-            log.info("Received an file open request %s", url)
-            QtWidgets.QMessageBox.information(None, "GNS3 Command launcher", "Received URL from DesktopServices: {}".format(url))
-            url_open_requests.append(url)
-
-        QtGui.QDesktopServices.setUrlHandler("gns3+telnet", on_request_2)
         app.urlOpenedSignal.connect(on_request)
         app.processEvents()
 
         loop = QtCore.QEventLoop()
         app.urlOpenedSignal.connect(loop.quit)
-
-        timeout = 5 # wait for 5 seconds
-        QtCore.QTimer.singleShot(timeout * 1000, loop.quit)
+        # wait 2 seconds to receive a URL open request
+        QtCore.QTimer.singleShot(2*1000, loop.quit)
 
         if not loop.isRunning():
             loop.exec_()
 
+        # execute the WebClient configurator on macOS when there is no params
+        # since there can be only one main executable in an App.
+        try:
+            subprocess.Popen(["gns3-webclient-config"], env=os.environ)
+        except (OSError, subprocess.SubprocessError) as e:
+            QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Cannot start the WebClient config: {}".format(e))
+        sys.exit(0)
 
     current_year = datetime.date.today().year
     print("GNS3 WebClient launcher version {}".format(__version__))
     print("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
 
     try:
-        if app.open_url_at_startup:
-            url = app.open_url_at_startup
-        elif url_open_requests:
+        if url_open_requests:
             url = url_open_requests.pop()
-        elif sys.platform.startswith("darwin") and not sys.argv:
-            # execute the WebClient configurator on macOS when there is no params
-            # since there can be only one main executable in an App.
-            QtWidgets.QMessageBox.information(None, "GNS3 Command launcher", "Execute configurator")
-            configurator()
-            return
         else:
             url = sys.argv[1]
         print('Launching URL "{}"'.format(url))
