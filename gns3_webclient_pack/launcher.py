@@ -177,7 +177,7 @@ def main():
     app = Application(sys.argv)
 
     url_open_requests = []
-    if sys.platform.startswith("linux"):
+    if sys.platform.startswith("darwin"):
 
         # intercept any QFileOpenEvent requests until the app is fully initialized.
         # NOTE: The QApplication must have the executable ($0) and filename
@@ -194,14 +194,14 @@ def main():
         app.urlOpenedSignal.connect(on_request)
         app.processEvents()
 
-        loop = QtCore.QEventLoop()
-        app.urlOpenedSignal.connect(loop.quit)
+        #loop = QtCore.QEventLoop()
+        #app.urlOpenedSignal.connect(loop.quit)
 
-        timeout = 5 # wait for 5 seconds
-        QtCore.QTimer.singleShot(timeout * 1000, loop.quit)
+        #timeout = 5 # wait for 5 seconds
+        #QtCore.QTimer.singleShot(timeout * 1000, loop.quit)
 
-        if not loop.isRunning():
-            loop.exec_()
+        #if not loop.isRunning():
+        #    loop.exec_()
 
 
     current_year = datetime.date.today().year
