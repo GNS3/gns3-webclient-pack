@@ -187,21 +187,26 @@ def main():
 
         def on_request(url):
             log.info("Received an file open request %s", url)
-            QtWidgets.QMessageBox.information(None, "GNS3 Command launcher", "Received URL".format(url))
+            QtWidgets.QMessageBox.information(None, "GNS3 Command launcher", "Received URL: {}".format(url))
             url_open_requests.append(url)
 
-        QtGui.QDesktopServices.setUrlHandler("gns3+telnet", on_request)
+        def on_request_2(url):
+            log.info("Received an file open request %s", url)
+            QtWidgets.QMessageBox.information(None, "GNS3 Command launcher", "Received URL from DesktopServices: {}".format(url))
+            url_open_requests.append(url)
+
+        QtGui.QDesktopServices.setUrlHandler("gns3+telnet", on_request_2)
         app.urlOpenedSignal.connect(on_request)
         app.processEvents()
 
-        #loop = QtCore.QEventLoop()
-        #app.urlOpenedSignal.connect(loop.quit)
+        loop = QtCore.QEventLoop()
+        app.urlOpenedSignal.connect(loop.quit)
 
-        #timeout = 5 # wait for 5 seconds
-        #QtCore.QTimer.singleShot(timeout * 1000, loop.quit)
+        timeout = 5 # wait for 5 seconds
+        QtCore.QTimer.singleShot(timeout * 1000, loop.quit)
 
-        #if not loop.isRunning():
-        #    loop.exec_()
+        if not loop.isRunning():
+            loop.exec_()
 
 
     current_year = datetime.date.today().year
