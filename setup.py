@@ -33,15 +33,16 @@ setup(
     description="GNS3 WebClient pack to use with the GNS3 web interface",
     long_description=open("README.md", "r").read(),
     install_requires=open("requirements.txt", "r").read().splitlines(),
-
     entry_points={
         "gui_scripts": [
             "gns3-webclient-config = gns3_webclient_pack.main:main",
             "gns3-webclient-launcher = gns3_webclient_pack.launcher:main"
         ]
     },
+    data_files=[
+        ("share/applications/", ["resources/gns3-webclient.desktop"])
+    ],
     packages=find_packages(".", exclude=["docs", "tests"]),
-    include_package_data=True,
     platforms="any",
     classifiers=[
         "Development Status :: 3 - Alpha",
