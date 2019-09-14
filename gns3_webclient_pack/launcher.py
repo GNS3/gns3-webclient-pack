@@ -28,7 +28,6 @@ try:
 except ImportError:
     raise SystemExit("Can't import Qt modules: Qt and/or PyQt is probably not installed correctly...")
 
-from gns3_webclient_pack.main import main as configurator
 from gns3_webclient_pack.local_config import LocalConfig
 from gns3_webclient_pack.settings import COMMANDS_SETTINGS
 from gns3_webclient_pack.version import __version__
@@ -174,6 +173,10 @@ def main():
     if sys.platform.startswith("darwin"):
         sys.argv = [a for a in sys.argv if not a.startswith("-psn_")]
 
+    if hasattr(sys, "frozen"):
+        frozen_dir = os.path.dirname(os.path.abspath(sys.executable))
+        os.environ["PATH"] = frozen_dir + os.pathsep + os.environ.get("PATH", "")
+
     app = Application(sys.argv)
 
     url_open_requests = []
@@ -194,18 +197,20 @@ def main():
         loop = QtCore.QEventLoop()
         app.urlOpenedSignal.connect(loop.quit)
         # wait 2 seconds to receive a URL open request
-        QtCore.QTimer.singleShot(2*1000, loop.quit)
+        QtCore.QTimer.singleShot(2000, loop.quit)
 
         if not loop.isRunning():
             loop.exec_()
 
-        # execute the WebClient configurator on macOS when there is no params
-        # since there can be only one main executable in an App.
         try:
-            subprocess.Popen(["gns3-webclient-config"], env=os.environ)
+            if not url_open_requests and hasattr(sys, "frozen"):
+                # execute the WebClient configurator on macOS when there is QFileOpenEvent
+                # since there can be only one main executable in an App.
+                subprocess.Popen(["gns3-webclient-config"], env=os.environ)
+                sys.exit(0)
         except (OSError, subprocess.SubprocessError) as e:
             QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Cannot start the WebClient config: {}".format(e))
-        sys.exit(0)
+            sys.exit(1)
 
     current_year = datetime.date.today().year
     print("GNS3 WebClient launcher version {}".format(__version__))
