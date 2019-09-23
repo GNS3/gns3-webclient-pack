@@ -75,10 +75,7 @@ def locale_check():
         log.info("current locale is {}.{}".format(language, encoding))
 
 
-def main():
-    """
-    Entry point for GNS3 WebClient pack
-    """
+def checks():
 
     # Sometimes (for example at first launch) the OSX app service launcher add
     # an extra argument starting with -psn_. We filter it
@@ -112,6 +109,14 @@ def main():
     # always use the INI format on Windows and OSX (because we don't like the registry and plist files)
     if sys.platform.startswith('win') or sys.platform.startswith('darwin'):
         QtCore.QSettings.setDefaultFormat(QtCore.QSettings.IniFormat)
+
+
+def main():
+    """
+    Entry point for GNS3 WebClient pack
+    """
+
+    checks()
 
     global app
     app = Application(sys.argv)

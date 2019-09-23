@@ -24,6 +24,8 @@ Compatibility layer for Qt bindings, so it is easier to switch to PySide if need
 
 
 import sys
+import inspect
+import functools
 
 try:
     from PyQt5 import sip
@@ -37,18 +39,36 @@ sys.modules[__name__ + '.QtNetwork'] = QtNetwork
 sys.modules[__name__ + '.QtWidgets'] = QtWidgets
 sys.modules[__name__ + '.sip'] = sip
 
-try:
-    from PyQt5 import QtSvg
-    sys.modules[__name__ + '.QtSvg'] = QtSvg
-except ImportError:
-    raise SystemExit("Please install the PyQt5.QtSvg module")
-
-try:
-    from PyQt5 import QtWebSockets
-    sys.modules[__name__ + '.QtWebSockets'] = QtWebSockets
-except ImportError:
-    raise SystemExit("Please install the PyQt5.QtWebSockets module")
-
 QtCore.Signal = QtCore.pyqtSignal
 QtCore.Slot = QtCore.pyqtSlot
 QtCore.Property = QtCore.pyqtProperty
+
+
+def sip_is_deleted(obj):
+    """
+    :return: True if object no longer exists
+    """
+    if obj is None or (isinstance(obj, sip.simplewrapper) and sip.isdeleted(obj)):
+        return True
+    return False
+
+
+def qpartial(func, *args, **kwargs):
+    """
+    A functools partial that you can use on QObject. the partial is not called
+    if the targeted QObject is destroyed .
+    """
+
+    if func is None:
+        return None
+
+    if inspect.ismethod(func):
+        if isinstance(func.__self__, QtCore.QObject):
+
+            def partial(*args, **kwargs):
+                if sip_is_deleted(func.__self__):
+                    return
+                return func(*args, **kwargs)
+            return functools.partial(partial, *args, **kwargs)
+
+    return functools.partial(func, *args, **kwargs)

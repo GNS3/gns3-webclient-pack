@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=GNS3 WebClient launcher
+Comment=Launch programs associated with protocol handlers for the GNS3 WebUi
+Exec=gns3-webclient-launcher %u
+TryExec=gns3-webclient-launcher
+Type=Application
+Categories=Network;
+MimeType=x-scheme-handler/gns3+telnet;x-scheme-handler/gns3+vnc;x-scheme-handler/gns3+spice;x-scheme-handler/gns3+pcap;
+X-KDE-Protocols=gns3+telnet,gns3+vnc,gns3+spice,gns3+pcap
+NoDisplay=true

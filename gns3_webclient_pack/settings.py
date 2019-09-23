@@ -257,10 +257,6 @@ else:
 
 DEFAULT_PACKET_CAPTURE_READER_COMMAND = PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS[WIRESHARK_LIVE_TRAFFIC_CAPTURE]
 
-DEFAULT_PACKET_CAPTURE_ANALYZER_COMMAND = ""
-if sys.platform.startswith("win"):
-    # Windows 64-bit
-    DEFAULT_PACKET_CAPTURE_ANALYZER_COMMAND = r'"{}\SolarWinds\ResponseTimeViewer\ResponseTimeViewer.exe" {{pcap_file}}'.format(program_files_x86)
 
 GENERAL_SETTINGS = {
     "geometry": "",
@@ -271,6 +267,7 @@ COMMANDS_SETTINGS = {
     "telnet_command": DEFAULT_TELNET_COMMAND,
     "vnc_command": DEFAULT_VNC_COMMAND,
     "spice_command": DEFAULT_SPICE_COMMAND,
+    "pcap_command": DEFAULT_PACKET_CAPTURE_READER_COMMAND
 }
 
 CUSTOM_COMMANDS_SETTINGS = {

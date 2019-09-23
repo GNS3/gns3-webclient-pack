@@ -40,12 +40,13 @@ setup(
         ]
     },
     data_files=[
-        ("share/applications/", ["resources/gns3-webclient.desktop"])
+        ("share/applications/", ["resources/gns3-webclient-launcher.desktop",
+                                 "resources/gns3-webclient-config.desktop"])
     ],
     packages=find_packages(".", exclude=["docs", "tests"]),
     platforms="any",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: X11 Applications :: Qt",
         "Intended Audience :: Information Technology",
         "Topic :: System :: Networking",
@@ -62,4 +63,5 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: Implementation :: CPython",
     ],
+
 )

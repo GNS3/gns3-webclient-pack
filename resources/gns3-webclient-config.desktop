@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=GNS3 WebClient config
+Comment=Configure tools for the WebUi
+Exec=gns3-webclient-config
+Type=Application
+Terminal=false
+Icon=gns3
+Categories=Network;
+Keywords=simulator;network;netsim;

@@ -67,6 +67,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.uiTelnetCommandPushButton.clicked.connect(self._telnetCommandSlot)
         self.uiVNCCommandPushButton.clicked.connect(self._vncCommandSlot)
         self.uiSPICECommandPushButton.clicked.connect(self._spiceCommandSlot)
+        self.uiPacketCaptureCommandPushButton.clicked.connect(self._packetCaptureCommandSlot)
 
         self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Close).clicked.connect(self.close)
         self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self._applySlot)
@@ -85,6 +86,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.uiTelnetCommandLineEdit.setText(self._commands_settings["telnet_command"])
         self.uiVNCCommandLineEdit.setText(self._commands_settings["vnc_command"])
         self.uiSPICECommandLineEdit.setText(self._commands_settings["spice_command"])
+        self.uiPacketCaptureCommandLineEdit.setText(self._commands_settings["pcap_command"])
+        self.uiPacketCaptureCommandLineEdit.textChanged.connect(self._commandChangedSlot)
         self.uiTelnetCommandLineEdit.textChanged.connect(self._commandChangedSlot)
         self.uiVNCCommandLineEdit.textChanged.connect(self._commandChangedSlot)
         self.uiSPICECommandLineEdit.textChanged.connect(self._commandChangedSlot)
@@ -169,6 +172,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if ok:
             self.uiSPICECommandLineEdit.setText(cmd)
 
+    def _packetCaptureCommandSlot(self):
+        """
+        Slot to set a chosen packet capture command.
+        """
+
+        cmd = self.uiPacketCaptureCommandLineEdit.text()
+        (cmd, ok) = QtWidgets.QInputDialog.getText(self, "Command", "Packet capture command", text=cmd)
+        if ok:
+            self.uiPacketCaptureCommandLineEdit.setText(cmd)
+
     def _applySlot(self):
         """
         Save the commands in the settings file.
@@ -177,6 +190,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._commands_settings["telnet_command"] = self.uiTelnetCommandLineEdit.text().strip()
         self._commands_settings["vnc_command"] = self.uiVNCCommandLineEdit.text().strip()
         self._commands_settings["spice_command"] = self.uiSPICECommandLineEdit.text().strip()
+        self._commands_settings["pcap_command"] = self.uiPacketCaptureCommandLineEdit.text().strip()
         LocalConfig.instance().saveSectionSettings("CommandsSettings", self._commands_settings)
         self.setSettings(self._settings)
         self._commands_saved = True
@@ -189,6 +203,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.uiTelnetCommandLineEdit.setText(COMMANDS_SETTINGS["telnet_command"])
         self.uiVNCCommandLineEdit.setText(COMMANDS_SETTINGS["vnc_command"])
         self.uiSPICECommandLineEdit.setText(COMMANDS_SETTINGS["spice_command"])
+        self.uiPacketCaptureCommandLineEdit.setText(COMMANDS_SETTINGS["pcap_command"])
 
     def closeEvent(self, event):
         """

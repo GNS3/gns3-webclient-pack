@@ -33,24 +33,12 @@ from gns3_webclient_pack.settings import COMMANDS_SETTINGS
 from gns3_webclient_pack.version import __version__
 from gns3_webclient_pack.utils.bring_to_front import bring_window_to_front_from_pid
 from gns3_webclient_pack.application import Application
+from gns3_webclient_pack.main import checks
+from gns3_webclient_pack.launcher_error import LauncherError
+from gns3_webclient_pack.pcap_stream import PcapStream
 
 import logging
 log = logging.getLogger(__name__)
-
-
-class LauncherError(Exception):
-
-    def __init__(self, message):
-        super().__init__(message)
-        if isinstance(message, Exception):
-            message = str(message)
-        self._message = message
-
-    def __repr__(self):
-        return self._message
-
-    def __str__(self):
-        return self._message
 
 
 class Command(object):
@@ -105,6 +93,9 @@ class Command(object):
             else:
                 command = command.replace("{display}", str(self._port - 5900))
 
+        if "{pcap_file}" in command_line:
+            raise LauncherError("The {{pcap_file}} parameter is only supported for the gns3+pcap protocol scheme")
+
         try:
             # replace the other params
             command = command.format(**self._params)
@@ -152,6 +143,12 @@ def launcher(argv):
     elif url.scheme == "gns3+spice":
         command_line = settings["spice_command"]
         log.debug('Use SPICE command: "{}"'.format(command_line))
+    elif url.scheme == "gns3+pcap":
+        command_line = settings["pcap_command"]
+        log.debug('Use PCAP command: "{}"'.format(command_line))
+        pcap_stream = PcapStream(command_line, **url_data)
+        pcap_stream.start()
+        return
     else:
         raise LauncherError("Protocol not found or supported in URL '{}'".format(url.geturl()))
 
@@ -168,15 +165,7 @@ def main():
     Entry point for GNS3 WebClient launcher
     """
 
-    # Sometimes (for example at first launch) the OSX app service launcher add
-    # an extra argument starting with -psn_. We filter it
-    if sys.platform.startswith("darwin"):
-        sys.argv = [a for a in sys.argv if not a.startswith("-psn_")]
-
-    if hasattr(sys, "frozen"):
-        frozen_dir = os.path.dirname(os.path.abspath(sys.executable))
-        os.environ["PATH"] = frozen_dir + os.pathsep + os.environ.get("PATH", "")
-
+    checks()
     app = Application(sys.argv)
 
     url_open_requests = []
