@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.0.0b2 06/11/2019
+
+* Update README and bump version to 1.0.0dev2
+* Release v1.0.0b1
+* Packet capture support.
+* Add gns3-webclient.desktop file in setup.py
+
 ## 1.0.0a1 10/09/2019
 
 * First alpha release with Windows support.
