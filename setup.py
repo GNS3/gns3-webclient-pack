@@ -40,8 +40,12 @@ setup(
         ]
     },
     data_files=[
-        ("share/applications/", ["resources/gns3-webclient-launcher.desktop",
-                                 "resources/gns3-webclient-config.desktop"])
+        ("share/applications/", ["resources/linux/gns3-webclient-launcher.desktop",
+                                 "resources/linux/gns3-webclient-config.desktop"]),
+        ('/usr/local/share/icons/hicolor/16x16/apps', ['resources/linux/icons/16x16/apps/gns3_webclient.png']),
+        ('/usr/local/share/icons/hicolor/32x32/apps', ['resources/linux/icons/32x32/apps/gns3_webclient.png']),
+        ('/usr/local/share/icons/hicolor/48x48/apps', ['resources/linux/icons/48x48/apps/gns3_webclient.png']),
+        ('/usr/local/share/icons/hicolor/scalable/apps', ['resources/linux/icons/scalable/apps/gns3_webclient.svg']),
     ],
     packages=find_packages(".", exclude=["docs", "tests"]),
     platforms="any",
