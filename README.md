@@ -44,11 +44,11 @@ Use the provided installer. Protocol handlers are registered during the installa
 
 ### macOS
 
-Drag and drop the app from the DMG into /Applications. Start the app at least once the register the protocol handlers.
+Drag and drop the app from the DMG into /Applications. Start the app at least once to register the protocol handlers.
 
 ### Linux (Debian package)
 
-**ONLY FOR UBUNTU 18.04 AT THE MOMENT**
+**ONLY FOR UBUNTU AT THE MOMENT**
 
 You can install gns3-webclient-pack from our official [PPA](https://launchpad.net/~gns3/+archive/ubuntu/unstable):
 
