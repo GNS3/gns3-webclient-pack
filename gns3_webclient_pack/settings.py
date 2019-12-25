@@ -200,7 +200,8 @@ else:
     PRECONFIGURED_VNC_COMMANDS = {
         'TightVNC': 'vncviewer {host}:{port}',
         'Vinagre': 'vinagre {host}::{port}',
-        'gvncviewer': 'gvncviewer {host}:{port}'
+        'gvncviewer': 'gvncviewer {host}:{port}',
+        'Remote Viewer': 'remote-viewer vnc://{host}:{port}'
     }
 
     # default VNC command on other systems
