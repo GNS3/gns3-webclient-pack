@@ -23,6 +23,18 @@ from gns3_webclient_pack.version import __version__
 if len(sys.argv) >= 2 and sys.argv[1] == "install" and sys.version_info < (3, 4):
     raise SystemExit("Python 3.4 or higher is required")
 
+if sys.platform.startswith('linux'):
+    data_files = [
+        ("share/applications/", ["resources/linux/applications/gns3-webclient-launcher.desktop",
+                                 "resources/linux/applications/gns3-webclient-config.desktop"]),
+        ("/usr/local/share/icons/hicolor/16x16/apps", ["resources/linux/icons/16x16/apps/gns3_webclient.png"]),
+        ("/usr/local/share/icons/hicolor/32x32/apps", ["resources/linux/icons/32x32/apps/gns3_webclient.png"]),
+        ("/usr/local/share/icons/hicolor/48x48/apps", ["resources/linux/icons/48x48/apps/gns3_webclient.png"]),
+        ("/usr/local/share/icons/hicolor/scalable/apps", ["resources/linux/icons/scalable/apps/gns3_webclient.svg"]),
+    ]
+else:
+    data_files = []
+
 setup(
     name="gns3-webclient-pack",
     version=__version__,
@@ -39,14 +51,7 @@ setup(
             "gns3-webclient-launcher = gns3_webclient_pack.launcher:main"
         ]
     },
-    data_files=[
-        ("share/applications/", ["resources/linux/applications/gns3-webclient-launcher.desktop",
-                                 "resources/linux/applications/gns3-webclient-config.desktop"]),
-        ('/usr/local/share/icons/hicolor/16x16/apps', ['resources/linux/icons/16x16/apps/gns3_webclient.png']),
-        ('/usr/local/share/icons/hicolor/32x32/apps', ['resources/linux/icons/32x32/apps/gns3_webclient.png']),
-        ('/usr/local/share/icons/hicolor/48x48/apps', ['resources/linux/icons/48x48/apps/gns3_webclient.png']),
-        ('/usr/local/share/icons/hicolor/scalable/apps', ['resources/linux/icons/scalable/apps/gns3_webclient.svg']),
-    ],
+    data_files=data_files,
     packages=find_packages(".", exclude=["docs", "tests"]),
     platforms="any",
     classifiers=[
