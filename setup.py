@@ -27,10 +27,10 @@ if sys.platform.startswith('linux'):
     data_files = [
         ("share/applications/", ["resources/linux/applications/gns3-webclient-launcher.desktop",
                                  "resources/linux/applications/gns3-webclient-config.desktop"]),
-        ("/usr/local/share/icons/hicolor/16x16/apps", ["resources/linux/icons/hicolor/16x16/apps/gns3_webclient.png"]),
-        ("/usr/local/share/icons/hicolor/32x32/apps", ["resources/linux/icons/hicolor/32x32/apps/gns3_webclient.png"]),
-        ("/usr/local/share/icons/hicolor/48x48/apps", ["resources/linux/icons/hicolor/48x48/apps/gns3_webclient.png"]),
-        ("/usr/local/share/icons/hicolor/scalable/apps", ["resources/linux/icons/hicolor/scalable/apps/gns3_webclient.svg"]),
+        ("share/icons/hicolor/16x16/apps", ["resources/linux/icons/hicolor/16x16/apps/gns3_webclient.png"]),
+        ("share/icons/hicolor/32x32/apps", ["resources/linux/icons/hicolor/32x32/apps/gns3_webclient.png"]),
+        ("share/icons/hicolor/48x48/apps", ["resources/linux/icons/hicolor/48x48/apps/gns3_webclient.png"]),
+        ("share/icons/hicolor/scalable/apps", ["resources/linux/icons/hicolor/scalable/apps/gns3_webclient.svg"]),
     ]
 else:
     data_files = []
