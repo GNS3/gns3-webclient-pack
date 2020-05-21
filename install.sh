@@ -5,7 +5,7 @@ set -e
 do_install() {
 
 	# install pip3 if missing
-  if [[ ! $(which pip3) ]]
+  if [ ! $(which pip3) ]
   then
     wget https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py && sudo python3 /tmp/get-pip.py
   fi
@@ -23,14 +23,14 @@ do_install() {
 }
 
 # Detect the Linux distribution
-if [[ -r /etc/os-release ]]
+if [ -r /etc/os-release ]
 then
 	. /etc/os-release
-elif [[ $(which lsb_release) ]]
+elif [ $(which lsb_release) ]
 then
 	ID=$(lsb_release -si)
 	VERSION_ID=$(lsb_release -sr)
-else
+else]]
 	echo "Sorry, your Linux distribution is not supported"
 	exit 1
 fi
