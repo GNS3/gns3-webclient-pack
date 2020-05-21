@@ -103,10 +103,10 @@ class LocalConfig(QtCore.QObject):
 
         if sys.platform.startswith("win"):
             appdata = os.path.expandvars("%APPDATA%")
-            path = os.path.join(appdata, "GNS3")
+            path = os.path.join(appdata, "GNS3", "WebClient")
         else:
             home = os.path.expanduser("~")
-            path = os.path.join(home, ".config", "GNS3")
+            path = os.path.join(home, ".config", "GNS3", "WebClient")
 
         return os.path.normpath(path)
 
