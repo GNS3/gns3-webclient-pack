@@ -11,7 +11,7 @@ do_install() {
   fi
 
   # install the webclient pack
-	sudo pip3 install gns3-webclient-pack
+	sudo python3 -m pip install gns3-webclient-pack
 
 	# build cache database of MIME types handled by desktop files
 	sudo update-desktop-database -q || true
