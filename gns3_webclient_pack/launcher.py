@@ -114,10 +114,7 @@ def launcher(argv):
     """
 
     try:
-        log.debug('Parsing URL "{}"'.format(argv))
-
         url = urllib.parse.urlparse(argv)
-
         host = url.hostname
         if not host or host in ("0.0.0.0", "0:0:0:0:0:0:0:0", "::"):
             host = "localhost"
@@ -139,18 +136,18 @@ def launcher(argv):
     settings = local_config.loadSectionSettings("CommandsSettings", COMMANDS_SETTINGS)
     if url.scheme == "gns3+telnet":
         command_line = settings["telnet_command"]
-        log.debug('Use telnet command: "{}"'.format(command_line))
+        log.info('Launch telnet command: "{}"'.format(command_line))
     elif url.scheme == "gns3+vnc":
         if url.port and url.port < 5900:
             raise LauncherError("VNC requires a port superior or equal to 5900, current port is '{}'".format(url.port))
         command_line = settings["vnc_command"]
-        log.debug('Use VNC command: "{}"'.format(command_line))
+        log.info('Launch VNC command: "{}"'.format(command_line))
     elif url.scheme == "gns3+spice":
         command_line = settings["spice_command"]
-        log.debug('Use SPICE command: "{}"'.format(command_line))
+        log.info('Launch SPICE command: "{}"'.format(command_line))
     elif url.scheme == "gns3+pcap":
         command_line = settings["pcap_command"]
-        log.debug('Use PCAP command: "{}"'.format(command_line))
+        log.info('Launch PCAP command: "{}"'.format(command_line))
         pcap_stream = PcapStream(command_line, **url_data)
         pcap_stream.start()
         return
@@ -165,12 +162,36 @@ def launcher(argv):
     command.launch(command_line)
 
 
+def configure_logging(level):
+    """
+    Save logging info to a file.
+    """
+
+    logfile = os.path.join(LocalConfig.instance().configDirectory(), "launcher.log")
+    logger = logging.getLogger()
+    logger.setLevel(level)
+
+    try:
+        try:
+            os.makedirs(os.path.dirname(logfile))
+        except FileExistsError:
+            pass
+        stdout_handler = logging.StreamHandler(sys.stdout)
+        logging.basicConfig(level=level, format="%(message)s", handlers=[stdout_handler])
+        file_handler = logging.FileHandler(logfile, "w")
+        file_handler.setLevel(level)
+        logger.addHandler(file_handler)
+    except OSError as e:
+        log.warning("Cannot save log to {}: {}".format(logfile, e))
+
+
 def main():
     """
     Entry point for GNS3 WebClient launcher
     """
 
     checks()
+    configure_logging(logging.INFO)
     app = Application(sys.argv)
 
     url_open_requests = []
@@ -207,15 +228,15 @@ def main():
             sys.exit(1)
 
     current_year = datetime.date.today().year
-    print("GNS3 WebClient launcher version {}".format(__version__))
-    print("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
+    log.info("GNS3 WebClient launcher version {}".format(__version__))
+    log.info("Copyright (c) {} GNS3 Technologies Inc.".format(current_year))
 
     try:
         if url_open_requests:
             url = url_open_requests.pop()
         else:
             url = sys.argv[1]
-        print('Launching URL "{}"'.format(url))
+        log.info('Launching URL "{}"'.format(url))
         launcher(url)
     except IndexError:
         if hasattr(sys, "frozen"):
@@ -226,6 +247,7 @@ def main():
         raise SystemExit("usage: {} <url>".format(program))
     except LauncherError as e:
         QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "{}".format(e))
+        log.critical("Could not launch URL: {}".format(e))
         raise SystemExit("{}".format(e))
 
 

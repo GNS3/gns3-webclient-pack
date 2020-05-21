@@ -76,3 +76,55 @@ Alternatively, you can install gns3-webclient-pack from terminal using the follo
 wget -qO- https://raw.githubusercontent.com/GNS3/gns3-webclient-pack/master/install.sh | sh
 
 This method should work on most Linux distros. Please open an new issue if this is not the case.
+
+## Debugging
+
+Use the `xdg-open` tool on Linux, for instance to start a Telnet console:
+
+`xdg-open "gns3+telnet://127.0.0.1:5000/PC1"`
+
+On other platforms, check the launcher logs:
+
+- Windows: `%APPDATA%\GNS3\WebClient\launcher.log`
+- Linux and MacOS: `~/.config/GNS3/WebClient/launcher.log`
+
+## Tips
+
+How to fix Chrome protocol handler “Always open these types of links in the associated app” pop up.
+
+### Windows
+
+Save the following content in a .reg file and execute as an Administrator.
+
+```
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome]
+"ExternalProtocolDialogShowAlwaysOpenCheckbox"=dword:00000001
+```
+
+Note: the GNS3 all-in-one installer already does this.
+
+### Linux
+
+Create the folders as needed.
+
+`sudo mkdir -p /etc/opt/chrome/policies/managed/`
+
+Create an empty JSON file.
+
+`sudo touch /etc/opt/chrome/policies/managed/managed_policies.json`
+
+Add the following content in this JSON file.
+
+```
+{
+  "ExternalProtocolDialogShowAlwaysOpenCheckbox": true
+}
+```
+
+### MacOS
+
+Run the following in a terminal.
+
+```
+defaults write com.google.Chrome URLWhitelist -array 'gns3+telnet://*' 'gns3+vnc://*' 'gns3+spice://*' 'gns3+pcap://*'
+```
