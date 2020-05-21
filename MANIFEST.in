@@ -9,3 +9,4 @@ recursive-exclude docs *
 recursive-include gns3_webclient_pack *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
+include *.txt *.md
