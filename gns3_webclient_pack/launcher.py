@@ -117,9 +117,14 @@ def launcher(argv):
         log.debug('Parsing URL "{}"'.format(argv))
 
         url = urllib.parse.urlparse(argv)
+
+        host = url.hostname
+        if not host or host in ("0.0.0.0", "0:0:0:0:0:0:0:0", "::"):
+            host = "localhost"
+
         url_data = {
             "url": url.geturl(),
-            "host": url.hostname or "localhost",
+            "host": host,
             "port": url.port or "",
             "path": url.path.lstrip("/") or "",
             "params": {}
