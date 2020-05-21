@@ -58,7 +58,7 @@ class LocalConfig(QtCore.QObject):
         else:
             filename = "webclient_pack.conf"
 
-        appname = "GNS3 WebClient pack"
+        appname = "GNS3"
 
         if sys.platform.startswith("win"):
             # On windows, the system wide configuration file location is %COMMON_APPDATA%/GNS3 WebClient pack/gns3_gui.conf
@@ -103,10 +103,10 @@ class LocalConfig(QtCore.QObject):
 
         if sys.platform.startswith("win"):
             appdata = os.path.expandvars("%APPDATA%")
-            path = os.path.join(appdata, "GNS3 WebClient pack")
+            path = os.path.join(appdata, "GNS3")
         else:
             home = os.path.expanduser("~")
-            path = os.path.join(home, ".config", "GNS3 WebClient pack")
+            path = os.path.join(home, ".config", "GNS3")
 
         return os.path.normpath(path)
 
