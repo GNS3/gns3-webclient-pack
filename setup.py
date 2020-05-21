@@ -35,6 +35,8 @@ if sys.platform.startswith('linux'):
 else:
     data_files = []
 
+dependencies = open("requirements.txt", "r").read().splitlines()
+
 setup(
     name="gns3-webclient-pack",
     version=__version__,
@@ -44,7 +46,7 @@ setup(
     author_email="developers@gns3.net",
     description="GNS3 WebClient pack to use with the GNS3 web interface",
     long_description=open("README.md", "r").read(),
-    install_requires=open("requirements.txt", "r").read().splitlines(),
+    install_requires=dependencies,
     entry_points={
         "gui_scripts": [
             "gns3-webclient-config = gns3_webclient_pack.main:main",
