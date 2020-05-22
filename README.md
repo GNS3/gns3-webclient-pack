@@ -65,7 +65,9 @@ The Debian package will install all dependencies including telnet, vinagre, virt
 
 ### Linux (Pypi package)
 
-pip3 install gns3-webclient-pack
+```
+sudo python3 -m pip install gns3-webclient-pack
+```
 
 You may have to manually install dependencies including telnet, vinagre, virt-viewer and wireshark.
 
@@ -73,7 +75,9 @@ You may have to manually install dependencies including telnet, vinagre, virt-vi
 
 Alternatively, you can install gns3-webclient-pack from terminal using the following command:
 
+```
 wget -qO- https://raw.githubusercontent.com/GNS3/gns3-webclient-pack/master/install.sh | sh
+```
 
 This method should work on most Linux distros. Please open an new issue if this is not the case.
 
