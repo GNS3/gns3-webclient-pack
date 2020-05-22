@@ -83,7 +83,7 @@ This method should work on most Linux distros. Please open an new issue if this 
 
 ## Debugging
 
-Use the `xdg-open` tool on Linux, for instance to start a Telnet console:
+Use the `xdg-open` tool on Linux (from the `xdg-utils` package). For instance to start a Telnet console:
 
 `xdg-open "gns3+telnet://127.0.0.1:5000/PC1"`
 

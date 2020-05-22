@@ -62,6 +62,7 @@ class PcapStream(QtCore.QObject):
     def _showError(self, error_message):
 
         QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", error_message)
+        log.error(error_message)
         self._loop.quit()
 
     def start(self, timeout=30):

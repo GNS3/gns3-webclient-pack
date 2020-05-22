@@ -48,7 +48,7 @@ class Application(QtWidgets.QApplication):
         self.setApplicationVersion(__version__)
 
         # set the window icon
-        self.setWindowIcon(QtGui.QIcon(":/images/gns3.ico"))
+        self.setWindowIcon(QtGui.QIcon(":/images/gns3_webclient.ico"))
 
     def event(self, event):
         # Handle QFileOpenEvent on macOS to received an URL

@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>426</width>
+    <width>728</width>
     <height>478</height>
    </rect>
   </property>
@@ -227,14 +227,13 @@
    <zorder>uiButtonBox</zorder>
    <zorder>verticalSpacer</zorder>
    <zorder>uiPacketCaptureCommandLabel</zorder>
-   <zorder>layoutWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="uiMenuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>426</width>
+     <width>728</width>
      <height>42</height>
     </rect>
    </property>

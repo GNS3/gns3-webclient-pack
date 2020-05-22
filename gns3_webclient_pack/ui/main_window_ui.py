@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/grossmj/PycharmProjects/gns3-webclient-pack/gns3_webclient_pack/ui/main_window.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -14,7 +14,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
-        MainWindow.resize(426, 478)
+        MainWindow.resize(728, 478)
         self.uiCentralWidget = QtWidgets.QWidget(MainWindow)
         self.uiCentralWidget.setObjectName("uiCentralWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.uiCentralWidget)
@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
         self.uiPacketCaptureCommandLabel.raise_()
         MainWindow.setCentralWidget(self.uiCentralWidget)
         self.uiMenuBar = QtWidgets.QMenuBar(MainWindow)
-        self.uiMenuBar.setGeometry(QtCore.QRect(0, 0, 426, 42))
+        self.uiMenuBar.setGeometry(QtCore.QRect(0, 0, 728, 42))
         self.uiMenuBar.setObjectName("uiMenuBar")
         self.uiFileMenu = QtWidgets.QMenu(self.uiMenuBar)
         self.uiFileMenu.setObjectName("uiFileMenu")

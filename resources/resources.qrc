@@ -5,8 +5,6 @@
         <file>icons/reload.svg</file>
         <file>icons/config.svg</file>
         <file>images/gns3_logo.png</file>
-        <file>images/gns3_icon_128x128.png</file>
-        <file>images/gns3_icon_256x256.png</file>
-        <file>images/gns3.ico</file>
+        <file>images/gns3_webclient.ico</file>
     </qresource>
 </RCC>

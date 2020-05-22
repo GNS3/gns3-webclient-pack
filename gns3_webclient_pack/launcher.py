@@ -114,6 +114,7 @@ def launcher(argv):
     """
 
     try:
+        log.info('Parsing URL "{}"'.format(argv))
         url = urllib.parse.urlparse(argv)
         host = url.hostname
         if not host or host in ("0.0.0.0", "0:0:0:0:0:0:0:0", "::"):
@@ -136,18 +137,18 @@ def launcher(argv):
     settings = local_config.loadSectionSettings("CommandsSettings", COMMANDS_SETTINGS)
     if url.scheme == "gns3+telnet":
         command_line = settings["telnet_command"]
-        log.info('Launch telnet command: "{}"'.format(command_line))
+        log.info('Launching Telnet command: "{}"'.format(command_line))
     elif url.scheme == "gns3+vnc":
         if url.port and url.port < 5900:
             raise LauncherError("VNC requires a port superior or equal to 5900, current port is '{}'".format(url.port))
         command_line = settings["vnc_command"]
-        log.info('Launch VNC command: "{}"'.format(command_line))
+        log.info('Launching VNC command: "{}"'.format(command_line))
     elif url.scheme == "gns3+spice":
         command_line = settings["spice_command"]
-        log.info('Launch SPICE command: "{}"'.format(command_line))
+        log.info('Launching SPICE command: "{}"'.format(command_line))
     elif url.scheme == "gns3+pcap":
         command_line = settings["pcap_command"]
-        log.info('Launch PCAP command: "{}"'.format(command_line))
+        log.info('Launching PCAP command: "{}"'.format(command_line))
         pcap_stream = PcapStream(command_line, **url_data)
         pcap_stream.start()
         return
@@ -236,7 +237,6 @@ def main():
             url = url_open_requests.pop()
         else:
             url = sys.argv[1]
-        log.info('Launching URL "{}"'.format(url))
         launcher(url)
     except IndexError:
         if hasattr(sys, "frozen"):
@@ -247,7 +247,7 @@ def main():
         raise SystemExit("usage: {} <url>".format(program))
     except LauncherError as e:
         QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "{}".format(e))
-        log.critical("Could not launch URL: {}".format(e))
+        log.critical("Could not launch using URL: {}".format(e))
         raise SystemExit("{}".format(e))
 
 
