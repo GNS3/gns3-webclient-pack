@@ -7,6 +7,12 @@
 * Fix install script when launched with /bin/sh. Fixes #8
 * Update the MIME and .desktop databases after installing on Linux.
 * New icons for WebClient. Fixes #11
+* Add remote viewer as a VNC console for Linux. Ref GNS3/gns3-gui#2913
+* Install data files (desktop & icons) only on Linux
+* Add 'Royal TS V5' to predefined console list.
+* Add MANIFEST.in and update setup.py. Fixes #9
+* Use GNS3 config directory to store web client pack own config file.
+* Fix issue when host is 0.0.0.0. Fixes #5 #6
 
 ## 1.0.0b2 06/11/2019
 
