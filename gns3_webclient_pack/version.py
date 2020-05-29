@@ -24,7 +24,7 @@
 # number has been incremented)
 
 __version__ = "1.0.0b3"
-__version_info__ = (1, 0, 0, -99)
+__version_info__ = (1, 0, 0, 99)
 
 #  Add the commit ID if this is a development version
 if "dev" in __version__:

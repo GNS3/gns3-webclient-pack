@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.0b3 29/05/2020
+
+* Change default config & log location.
+* Log to launcher.log and update README.md
+* Fix install script when launched with /bin/sh. Fixes #8
+* Update the MIME and .desktop databases after installing on Linux.
+* New icons for WebClient. Fixes #11
+
 ## 1.0.0b2 06/11/2019
 
 * Update README and bump version to 1.0.0dev2
