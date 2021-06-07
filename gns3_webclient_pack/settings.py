@@ -122,7 +122,8 @@ elif sys.platform.startswith("darwin"):
         'Royal TSX': "open 'rtsx://telnet%3A%2F%2F{host}:{port}'",
         'SecureCRT': '/Applications/SecureCRT.app/Contents/MacOS/SecureCRT /N "{name}" /T /TELNET {host} {port}',
         'ZOC 6': '/Applications/zoc6.app/Contents/MacOS/zoc6 "/TELNET:{host}:{port}" /TABBED "/TITLE:{name}"',
-        'ZOC 7': '/Applications/zoc7.app/Contents/MacOS/zoc7 "/TELNET:{host}:{port}" /TABBED "/TITLE:{name}"'
+        'ZOC 7': '/Applications/zoc7.app/Contents/MacOS/zoc7 "/TELNET:{host}:{port}" /TABBED "/TITLE:{name}"',
+        'ZOC 8': '/Applications/zoc8.app/Contents/MacOS/zoc8 "/TELNET:{host}:{port}" /TABBED "/TITLE:{name}"'
     }
 
     # default Mac OS X Telnet console command
