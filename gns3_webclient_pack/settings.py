@@ -48,6 +48,7 @@ if sys.platform.startswith("win"):
                                      'Telnet': 'telnet {host} {port}',
                                      'Xshell 4': r'"{}\NetSarang\Xshell 4\xshell.exe" -url telnet://{{host}}:{{port}}'.format(program_files_x86),
                                      'Xshell 5': r'"{}\NetSarang\Xshell 5\xshell.exe" -url telnet://{{host}}:{{port}} -newtab {{name}}'.format(program_files_x86),
+                                     'Windows Terminal': r'wt.exe -w 1 new-tab --title {name} telnet {host} {port}',
                                      'ZOC 6': r'"{}\ZOC6\zoc.exe" "/TELNET:{{host}}:{{port}}" /TABBED "/TITLE:{{name}}"'.format(program_files_x86)}
 
     # default on Windows
