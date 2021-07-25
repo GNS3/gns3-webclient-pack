@@ -140,7 +140,8 @@ else:
                                      'SecureCRT': 'SecureCRT /T /N "{name}"  /TELNET {host} {port}',
                                      'Mate Terminal': 'mate-terminal --tab -e "telnet {host} {port}" -t "{name}"',
                                      'LXTerminal': 'lxterminal -t "{name}" -e "telnet {host} {port}"',
-                                     'urxvt': 'urxvt -title {name} -e telnet {host} {port}'}
+                                     'urxvt': 'urxvt -title {name} -e telnet {host} {port}',
+                                     'kitty': 'kitty -T {name} telnet {host} {port}'}
 
     # default Telnet command on other systems
     DEFAULT_TELNET_COMMAND = PRECONFIGURED_TELNET_COMMANDS["Xterm"]
