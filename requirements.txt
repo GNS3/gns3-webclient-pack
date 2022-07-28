@@ -1,1 +1,1 @@
-distro
+distro==1.7.0
