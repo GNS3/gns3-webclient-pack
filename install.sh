@@ -17,7 +17,7 @@ do_install() {
 	sudo update-desktop-database -q || true
 	sudo update-mime-database -n /usr/share/mime || true
 
-  echo "Installation successfuly completed!"
+  echo "Installation successfully completed!"
 
 	exit 0
 }
@@ -48,7 +48,7 @@ for distro_id in $ID $ID_LIKE; do
 			do_install
 			;;
 		fedora)
-			sudo dnf install -y python3 python3-pyqt5 telnet vinagre virt-viewer wireshark-qt
+			sudo dnf install -y python3 python3-pyqt5-sip telnet vinagre virt-viewer wireshark
 			do_install
 			;;
 		opensuse|suse)
