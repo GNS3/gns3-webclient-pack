@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GNS3 WebClient pack</string>
+   <string>GNS3 WebClient Configuration</string>
   </property>
   <widget class="QWidget" name="uiCentralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
