@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.0.0b4 24/01/2023
+
+* Upgrade to PyQt5 version 5.15.7
+* Change WebClient window title and upgrade dependencies. Ref #23
+* Update packages for Fedora installation. Fixes #17
+* Add Python 3.9, 3.10 and 3.11 support
+* Add kitty as an option for Console Applications. Fixes https://github.com/GNS3/gns3-gui/issues/3203
+* Add Windows Terminal as an option for Console Applications. Fixes #20
+* Add ZOC8 console terminal for macOS command line
+
 ## 1.0.0b3 29/05/2020
 
 * Change default config & log location.
