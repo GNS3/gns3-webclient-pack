@@ -1,5 +1,5 @@
 -rrequirements.txt
 
-pep8==1.7.0
-pytest==4.4.1
-pytest-qt==3.2.2
+pep8==1.7.1
+pytest==7.2.1
+pytest-qt==4.2.0
