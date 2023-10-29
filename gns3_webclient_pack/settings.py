@@ -133,7 +133,7 @@ elif sys.platform.startswith("darwin"):
 else:
     PRECONFIGURED_TELNET_COMMANDS = {'Xterm': 'xterm -T "{name}" -e "telnet {host} {port}"',
                                      'Putty': 'putty -telnet {host} {port} -title "{name}" -sl 2500 -fg SALMON1 -bg BLACK',
-                                     'Gnome Terminal': 'gnome-terminal -t "{name}" -e "telnet {host} {port}"',
+                                     'Gnome Terminal': 'gnome-terminal --tab -t "{name}" -- telnet {host} {port}',
                                      'Xfce4 Terminal': 'xfce4-terminal --tab -T "{name}" -e "telnet {host} {port}"',
                                      'ROXTerm': 'roxterm -n "{name}" --tab -e "telnet {host} {port}"',
                                      'KDE Konsole': 'konsole --new-tab -p tabtitle="{name}" -e "telnet {host} {port}"',
