@@ -20,12 +20,14 @@ Main window for the WebClient pack.
 """
 
 import logging
+import sys
 
 from .local_config import LocalConfig
 from .qt import QtGui, QtCore, QtWidgets
 from .ui.main_window_ui import Ui_MainWindow
 from .dialogs.about_dialog import AboutDialog
 from .dialogs.command_dialog import CommandDialog
+from .utils.install_mime_types import install_mime_types
 from .settings import (GENERAL_SETTINGS, COMMANDS_SETTINGS)
 
 log = logging.getLogger(__name__)
@@ -59,6 +61,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         QtCore.QTimer.singleShot(0, self._startupLoading)
 
         # help menu connections
+        self.uiInstallMimeAction.triggered.connect(self._installMimeSlot)
         self.uiOnlineHelpAction.triggered.connect(self._onlineHelpActionSlot)
         self.uiAboutQtAction.triggered.connect(self._aboutQtActionSlot)
         self.uiAboutAction.triggered.connect(self._aboutActionSlot)
@@ -111,6 +114,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._settings.update(new_settings)
         # save the settings
         LocalConfig.instance().saveSectionSettings("GeneralSettings", self._settings)
+
+    def _installMimeSlot(self):
+        """
+        Slot to install the mime types.
+        """
+
+        if sys.platform.startswith("linux"):
+            install_mime_types()
+        else:
+            QtWidgets.QMessageBox.critical(self, "MIME types", "Installing MIME types is only possible on Linux")
 
     def _onlineHelpActionSlot(self):
         """

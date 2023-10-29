@@ -21,6 +21,7 @@ import os
 import datetime
 import locale
 import signal
+import argparse
 
 try:
     from gns3_webclient_pack.qt import QtCore, QtWidgets
@@ -30,6 +31,7 @@ except ImportError:
 from gns3_webclient_pack.main_window import MainWindow
 from gns3_webclient_pack.application import Application
 from gns3_webclient_pack.utils import parse_version
+from gns3_webclient_pack.utils.install_mime_types import install_mime_types
 from gns3_webclient_pack.version import __version__
 
 import logging
@@ -117,6 +119,14 @@ def main():
     """
 
     checks()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--install-mime-types", help="Install mime types (Linux only)", action="store_true", default=False)
+    options = parser.parse_args()
+
+    if options.install_mime_types:
+        install_mime_types()
+        return
 
     global app
     app = Application(sys.argv)

@@ -51,8 +51,8 @@ class Application(QtWidgets.QApplication):
         self.setWindowIcon(QtGui.QIcon(":/images/gns3_webclient.ico"))
 
     def event(self, event):
-        # Handle QFileOpenEvent on macOS to received an URL
-        # The URL is not passed in sys.argv on mac
+        # Handle QFileOpenEvent on macOS to receive a URL
+        # The URL is not passed in sys.argv on macOS
         if sys.platform.startswith("darwin"):
             if isinstance(event, QtGui.QFileOpenEvent) and not event.url().isEmpty():
                 url = event.url().toString()

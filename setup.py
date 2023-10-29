@@ -57,7 +57,6 @@ dist = setup(
                 "gns3-webclient-launcher = gns3_webclient_pack.launcher:main"
             ]
         },
-        data_files=data_files,
         packages=find_packages(".", exclude=["docs", "tests"]),
         platforms="any",
         classifiers=[
@@ -83,21 +82,3 @@ dist = setup(
             "Programming Language :: Python :: Implementation :: CPython",
         ],
 )
-
-if sys.platform.startswith("linux") and os.geteuid() == 0 and dist is not None:
-
-    # update the XDG .desktop file database
-    try:
-        sys.stdout.write('Updating the XDG .desktop file database.\n')
-        subprocess.call(["update-desktop-database", "-q"])
-    except:
-        sys.stderr.write("Could not update the XDG .desktop file database")
-
-    # update the shared MIME-Info database cache
-    try:
-        sys.stdout.write('Updating the shared MIME-Info database cache.\n')
-        subprocess.call(["update-mime-database", "-n", os.path.join(sys.prefix, "share/mime/")])
-    except:
-        sys.stderr.write("Could not update shared MIME-Info database cache")
-else:
-    print("Could not update the XDG .desktop file and shared MIME-Info databases")
