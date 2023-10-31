@@ -128,6 +128,7 @@ class Command(object):
         command = command.replace("{port}", str(self._port))
         command = command.replace("{url}", self._url)
         command = command.replace("{name}", self._params.get("name", "").replace('"', '\\"'))
+        command = command.replace("{project}", self._params.get("project", "").replace('"', '\\"'))
 
         if "{display}" in command_line:
             if not self._url.startswith("gns3+vnc"):
