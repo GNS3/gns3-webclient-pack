@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import shlex
 import pytest
 from unittest.mock import patch
@@ -29,7 +30,7 @@ def test_telnet_command_on_linux(local_config):
             patch('os.environ', new={}), \
             patch('sys.platform', new="linux"):
         launcher("gns3+telnet://localhost:6000")
-        proc.assert_called_once_with(shlex.split("telnet localhost 6000"), env={})
+        proc.assert_called_once_with(shlex.split("telnet localhost 6000"), env=os.environ)
 
 
 def test_telnet_command_on_windows(local_config):
@@ -38,7 +39,7 @@ def test_telnet_command_on_windows(local_config):
     with patch('subprocess.call') as proc, \
             patch('sys.platform', new="win"):
         launcher("gns3+telnet://localhost:6000")
-        proc.assert_called_once_with("telnet localhost 6000")
+        proc.assert_called_once_with("telnet localhost 6000", env=os.environ)
 
 
 def test_telnet_command_no_port_on_windows(local_config):
@@ -47,7 +48,7 @@ def test_telnet_command_no_port_on_windows(local_config):
     with patch('subprocess.call') as proc, \
             patch('sys.platform', new="win"):
         launcher("gns3+telnet://localhost")
-        proc.assert_called_once_with("telnet localhost")
+        proc.assert_called_once_with("telnet localhost", env=os.environ)
 
 
 def test_vnc_command_with_params(local_config):
@@ -58,7 +59,7 @@ def test_vnc_command_with_params(local_config):
             patch('sys.platform', new="linux"):
         url = "gns3+vnc://localhost:5901?name=R1&project_id=1234&node_id=5678"
         launcher(url)
-        proc.assert_called_once_with(shlex.split("vncviewer localhost 5901 R1 1234 5678 1 {}".format(url)), env={})
+        proc.assert_called_once_with(shlex.split("vncviewer localhost 5901 R1 1234 5678 1 {}".format(url)), env=os.environ)
 
 
 def test_vnc_command_with_invalid_port(qtbot, monkeypatch):
@@ -75,7 +76,7 @@ def test_telnet_command_with_non_ascii_characters(local_config):
             patch('sys.platform', new="win"):
         url = "gns3+telnet://localhost:6000?name=áÆÑß"
         launcher(url)
-        proc.assert_called_once_with("telnet localhost 6000 áÆÑß")
+        proc.assert_called_once_with("telnet localhost 6000 áÆÑß", env=os.environ)
 
 
 def test_telnet_command_with_popen_issues(qtbot, monkeypatch):
@@ -112,7 +113,7 @@ def test_vnc_command_on_linux(local_config):
             patch('os.environ', new={}), \
             patch('sys.platform', new="linux"):
         launcher("gns3+vnc://localhost:6000")
-        proc.assert_called_once_with(shlex.split("vncviewer localhost 6000"), env={})
+        proc.assert_called_once_with(shlex.split("vncviewer localhost 6000"), env=os.environ)
 
 
 def test_vnc_command_on_windows(local_config):
@@ -121,7 +122,7 @@ def test_vnc_command_on_windows(local_config):
     with patch('subprocess.call') as proc, \
             patch('sys.platform', new="win"):
         launcher("gns3+vnc://localhost:6000")
-        proc.assert_called_once_with("vncviewer localhost 6000")
+        proc.assert_called_once_with("vncviewer localhost 6000", env=os.environ)
 
 
 def test_spice_command_on_linux(local_config):
@@ -131,7 +132,7 @@ def test_spice_command_on_linux(local_config):
             patch('os.environ', new={}), \
             patch('sys.platform', new="linux"):
         launcher("gns3+spice://localhost:6000")
-        proc.assert_called_once_with(shlex.split("remote-viewer localhost 6000"), env={})
+        proc.assert_called_once_with(shlex.split("remote-viewer localhost 6000"), env=os.environ)
 
 
 def test_spice_command_on_windows(local_config):
@@ -140,4 +141,4 @@ def test_spice_command_on_windows(local_config):
     with patch('subprocess.call') as proc, \
             patch('sys.platform', new="win"):
         launcher("gns3+spice://localhost:6000")
-        proc.assert_called_once_with("remote-viewer localhost 6000")
+        proc.assert_called_once_with("remote-viewer localhost 6000", env=os.environ)

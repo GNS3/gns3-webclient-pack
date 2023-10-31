@@ -94,7 +94,7 @@ class Command(object):
 
         if sys.platform.startswith("win"):
             # use the string on Windows
-            process = subprocess.call(command)
+            process = subprocess.call(command, env=os.environ)
         else:
             # use arguments on other platforms
             try:
@@ -102,15 +102,13 @@ class Command(object):
             except ValueError as e:
                 raise LauncherError("Cannot parse '{}': {}".format(command, e))
 
-            process = subprocess.Popen(args, env=os.environ)
-
             env = os.environ.copy()
             # special case to force gnome-terminal to correctly use tabs on Linux
             if sys.platform.startswith("linux") and "gnome-terminal" in args[0] and "--tab" in command:
                 # inject gnome-terminal environment variables
                 if "GNOME_TERMINAL_SERVICE" not in env or "GNOME_TERMINAL_SCREEN" not in env:
                     env.update(self.gnome_terminal_env())
-            subprocess.call(args, env=env)
+            process = subprocess.call(args, env=env)
 
         if sys.platform.startswith("win") and not hasattr(sys, '_called_from_test'):
             # bring the launched application to the front (Windows only)
