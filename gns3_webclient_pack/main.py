@@ -128,6 +128,13 @@ def main():
         install_mime_types()
         return
 
+    try:
+        import truststore
+        truststore.inject_into_ssl()
+        log.info("Using system certificate store for SSL connections")
+    except ImportError:
+        pass
+
     global app
     app = Application(sys.argv)
 

@@ -279,3 +279,10 @@ CUSTOM_COMMANDS_SETTINGS = {
     "vnc": {},
     "spice": {}
 }
+
+CONTROLLER_SETTINGS = {
+    "api_version": "v2",
+    "protocol": "http",
+    "username": "admin",
+    "password": "admin"
+}
