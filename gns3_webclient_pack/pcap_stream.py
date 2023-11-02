@@ -186,8 +186,8 @@ class PcapStream(QtCore.QObject):
         """
 
         command = self._command_line.replace("{pcap_file}", '"' + capture_file_path + '"')
-        command = command.replace("{name}", self._params.get("name", "packet capture"))
-        command = command.replace("{project}", self._params.get("project", ""))
+        command = command.replace("{name}", self._params.get("name", "unknown packet capture"))
+        command = command.replace("{project}", self._params.get("project", "unknown project"))
 
         if "|" in command:
             # live traffic capture (using tail)
