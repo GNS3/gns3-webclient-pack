@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>728</width>
-    <height>478</height>
+    <width>620</width>
+    <height>309</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -233,14 +233,15 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>728</width>
-     <height>42</height>
+     <width>620</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="uiFileMenu">
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="uiInstallMimeAction"/>
     <addaction name="uiQuitAction"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
@@ -304,6 +305,11 @@
    </property>
    <property name="menuRole">
     <enum>QAction::AboutQtRole</enum>
+   </property>
+  </action>
+  <action name="uiInstallMimeAction">
+   <property name="text">
+    <string>&amp;Install MIME types (Linux only)</string>
    </property>
   </action>
  </widget>

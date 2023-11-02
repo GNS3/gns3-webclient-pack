@@ -20,6 +20,7 @@ import os
 import sys
 import subprocess
 import shlex
+import psutil
 import urllib.parse
 import datetime
 
@@ -51,6 +52,39 @@ class Command(object):
         self._params = params
         self._url = url
 
+    @staticmethod
+    def gnome_terminal_env():
+
+        uid = os.getuid()
+
+        # get list of processes of current user
+        procs = [p.info for p in psutil.process_iter(
+            attrs=['name', 'pid', 'ppid', 'create_time', 'uids']
+        ) if p.info['uids'].real == uid]
+
+        # get pid of gnome-terminal-server process
+        gnome_terminal_server_pid = [p['pid'] for p in procs if p['name'] == "gnome-terminal-server"]
+        if not gnome_terminal_server_pid:
+            return {}
+        gnome_terminal_server_pid = gnome_terminal_server_pid[0]
+
+        # get subprocesses of gnome-terminal-server
+        gnome_terminal_server_children = [p for p in procs if p['ppid'] == gnome_terminal_server_pid]
+        gnome_terminal_server_children.sort(key=lambda p: p['create_time'], reverse=True)
+
+        # return the gnome-terminal environment variables of the first subprocess named telnet
+        for proc in gnome_terminal_server_children:
+            if proc['name'] == "telnet":
+                try:
+                    env = psutil.Process(proc['pid']).environ()
+                    if 'GNOME_TERMINAL_SERVICE' in env and \
+                            'GNOME_TERMINAL_SCREEN' in env:
+                        return {'GNOME_TERMINAL_SERVICE': env['GNOME_TERMINAL_SERVICE'],
+                                'GNOME_TERMINAL_SCREEN': env['GNOME_TERMINAL_SCREEN']}
+                except psutil.Error:
+                    pass
+        return {}
+
     def _exec_command(self, command):
         """
         Execute a command using subprocess
@@ -60,7 +94,7 @@ class Command(object):
 
         if sys.platform.startswith("win"):
             # use the string on Windows
-            process = subprocess.Popen(command)
+            process = subprocess.call(command, env=os.environ)
         else:
             # use arguments on other platforms
             try:
@@ -68,7 +102,13 @@ class Command(object):
             except ValueError as e:
                 raise LauncherError("Cannot parse '{}': {}".format(command, e))
 
-            process = subprocess.Popen(args, env=os.environ)
+            env = os.environ.copy()
+            # special case to force gnome-terminal to correctly use tabs on Linux
+            if sys.platform.startswith("linux") and "gnome-terminal" in args[0] and "--tab" in command:
+                # inject gnome-terminal environment variables
+                if "GNOME_TERMINAL_SERVICE" not in env or "GNOME_TERMINAL_SCREEN" not in env:
+                    env.update(self.gnome_terminal_env())
+            process = subprocess.call(args, env=env)
 
         if sys.platform.startswith("win") and not hasattr(sys, '_called_from_test'):
             # bring the launched application to the front (Windows only)
@@ -86,6 +126,7 @@ class Command(object):
         command = command.replace("{port}", str(self._port))
         command = command.replace("{url}", self._url)
         command = command.replace("{name}", self._params.get("name", "").replace('"', '\\"'))
+        command = command.replace("{project}", self._params.get("project", "").replace('"', '\\"'))
 
         if "{display}" in command_line:
             if not self._url.startswith("gns3+vnc"):

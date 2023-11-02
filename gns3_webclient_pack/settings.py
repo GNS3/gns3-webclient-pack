@@ -133,7 +133,7 @@ elif sys.platform.startswith("darwin"):
 else:
     PRECONFIGURED_TELNET_COMMANDS = {'Xterm': 'xterm -T "{name}" -e "telnet {host} {port}"',
                                      'Putty': 'putty -telnet {host} {port} -title "{name}" -sl 2500 -fg SALMON1 -bg BLACK',
-                                     'Gnome Terminal': 'gnome-terminal -t "{name}" -e "telnet {host} {port}"',
+                                     'Gnome Terminal': 'gnome-terminal --tab -t "{name}" -- telnet {host} {port}',
                                      'Xfce4 Terminal': 'xfce4-terminal --tab -T "{name}" -e "telnet {host} {port}"',
                                      'ROXTerm': 'roxterm -n "{name}" --tab -e "telnet {host} {port}"',
                                      'KDE Konsole': 'konsole --new-tab -p tabtitle="{name}" -e "telnet {host} {port}"',
@@ -204,7 +204,7 @@ else:
     PRECONFIGURED_VNC_COMMANDS = {
         'TightVNC': 'vncviewer {host}:{port}',
         'Vinagre': 'vinagre {host}::{port}',
-        'gvncviewer': 'gvncviewer {host}:{port}',
+        'gvncviewer': 'gvncviewer {host}:{display}',
         'Remote Viewer': 'remote-viewer vnc://{host}:{port}'
     }
 
@@ -243,22 +243,21 @@ WIRESHARK_NORMAL_CAPTURE = "Wireshark Traditional Capture"
 WIRESHARK_LIVE_TRAFFIC_CAPTURE = "Wireshark Live Traffic Capture"
 
 if sys.platform.startswith("win"):
-    PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS = {WIRESHARK_NORMAL_CAPTURE: r"{}\Wireshark\wireshark.exe {{pcap_file}}".format(program_files),
-                                                    WIRESHARK_LIVE_TRAFFIC_CAPTURE: r'tail.exe -f -c +0b {{pcap_file}} | "{}\Wireshark\wireshark.exe" -o "gui.window_title:{{name}}" -k -i -'.format(program_files)}
+    PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS = {WIRESHARK_NORMAL_CAPTURE: r'{}\Wireshark\wireshark.exe {{pcap_file}} --capture-comment "{{project}} {{name}}"'.format(program_files),
+                                                    WIRESHARK_LIVE_TRAFFIC_CAPTURE: r'tail.exe -f -c +0b {{pcap_file}} | "{}\Wireshark\wireshark.exe" --capture-comment "{{project}} {{name}}" -o "gui.window_title:{{name}}" -k -i -'.format(program_files)}
 
 elif sys.platform.startswith("darwin"):
     # Mac OS X
-    PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS = {WIRESHARK_NORMAL_CAPTURE: "/usr/bin/open -a /Applications/Wireshark.app {pcap_file}",
-                                                    "Wireshark V1.X Live Traffic Capture": 'tail -f -c +0 {pcap_file} | /Applications/Wireshark.app/Contents/Resources/bin/wireshark -o "gui.window_title:{name}" -k -i -',
-                                                    WIRESHARK_LIVE_TRAFFIC_CAPTURE: 'tail -f -c +0 {pcap_file} | /Applications/Wireshark.app/Contents/MacOS/Wireshark -o "gui.window_title:{name}" -k -i -'}
+    PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS = {WIRESHARK_NORMAL_CAPTURE: '/usr/bin/open -a /Applications/Wireshark.app {pcap_file} --capture-comment "{project} {name}"',
+                                                    WIRESHARK_LIVE_TRAFFIC_CAPTURE: 'tail -f -c +0 {pcap_file} | /Applications/Wireshark.app/Contents/MacOS/Wireshark --capture-comment "{project} {name}" -o "gui.window_title:{name}" -k -i -'}
 
 elif sys.platform.startswith("freebsd"):
     # FreeBSD
-    PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS = {WIRESHARK_NORMAL_CAPTURE: "wireshark {pcap_file}",
-                                                    WIRESHARK_LIVE_TRAFFIC_CAPTURE: 'gtail -f -c +0b {pcap_file} | wireshark -o "gui.window_title:{name}" -k -i -'}
+    PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS = {WIRESHARK_NORMAL_CAPTURE: 'wireshark {pcap_file} --capture-comment "{project} {name}"',
+                                                    WIRESHARK_LIVE_TRAFFIC_CAPTURE: 'gtail -f -c +0b {pcap_file} | wireshark --capture-comment "{project} {name}" -o "gui.window_title:{name}" -k -i -'}
 else:
-    PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS = {WIRESHARK_NORMAL_CAPTURE: "wireshark {pcap_file}",
-                                                    WIRESHARK_LIVE_TRAFFIC_CAPTURE: 'tail -f -c +0b {pcap_file} | wireshark -o "gui.window_title:{name}" -k -i -'}
+    PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS = {WIRESHARK_NORMAL_CAPTURE: 'wireshark {pcap_file} --capture-comment "{project} {name}"',
+                                                    WIRESHARK_LIVE_TRAFFIC_CAPTURE: 'tail -f -c +0b {pcap_file} | wireshark --capture-comment "{project} {name}" -o "gui.window_title:{name}" -k -i -'}
 
 DEFAULT_PACKET_CAPTURE_READER_COMMAND = PRECONFIGURED_PACKET_CAPTURE_READER_COMMANDS[WIRESHARK_LIVE_TRAFFIC_CAPTURE]
 
