@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0b5 03/11/2023
+
+* SSL and controller authentication support (for packet captures)
+* Support for tabs when using Gnome-terminal
+* Support to install resources and MIME types from webclient
+* Migrate to pyproject.toml
+* Add Python 3.12 support
+* Add project variable for packet capture command line
+
 ## 1.0.0b4 24/01/2023
 
 * Upgrade to PyQt5 version 5.15.7
