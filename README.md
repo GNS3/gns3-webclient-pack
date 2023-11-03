@@ -67,6 +67,7 @@ The Debian package will install all dependencies including telnet, vinagre, virt
 
 ```
 sudo python3 -m pip install gns3-webclient-pack
+sudo gns3-webclient-config --install-mime-types
 ```
 
 You may have to manually install dependencies including telnet, vinagre, virt-viewer and wireshark.
