@@ -25,6 +25,8 @@ import shlex
 from typing import List, Optional
 
 from gns3_webclient_pack.dialogs.login_dialog import LoginDialog
+from gns3_webclient_pack.local_config import LocalConfig
+from gns3_webclient_pack.settings import CONTROLLER_SETTINGS
 from gns3_webclient_pack.qt import QtCore, QtWidgets, QtNetwork, qpartial, sip
 from gns3_webclient_pack.version import __version__
 from gns3_webclient_pack.launcher_error import LauncherError
@@ -70,7 +72,7 @@ class QNetworkReplyWatcher(QtCore.QObject):
 
 class PcapStream(QtCore.QObject):
 
-    def __init__(self, command_line, protocol, user, password, accept_invalid_ssl_certificates, host, port, path, params, url):
+    def __init__(self, command_line, protocol, user, password, jwt_token, accept_invalid_ssl_certificates, host, port, path, params, url):
 
         super().__init__()
         self._network_manager = QtNetwork.QNetworkAccessManager()
@@ -86,7 +88,7 @@ class PcapStream(QtCore.QObject):
         self._user = user
         self._password = password
         self._capture_file = None
-        self._jwt_token = None
+        self._jwt_token = jwt_token
         self._auth_attempted = False
         self._loop = QtCore.QEventLoop()
 
@@ -267,8 +269,13 @@ class PcapStream(QtCore.QObject):
                 if token:
                     self._auth_attempted = False
                     self._jwt_token = token
+                    # save the token for future sessions
+                    controller_settings = LocalConfig.instance().loadSectionSettings("ControllerSettings", CONTROLLER_SETTINGS)
+                    controller_settings["token"] = token
+                    LocalConfig.instance().saveSectionSettings("ControllerSettings", controller_settings)
                     return
         else:
+            self._jwt_token = None
             raise LauncherError(f"{reply.errorString()}")
 
 

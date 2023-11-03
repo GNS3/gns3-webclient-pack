@@ -284,5 +284,6 @@ CONTROLLER_SETTINGS = {
     "username": "admin",
     "password": "admin",
     "protocol": "http",
-    "accept_invalid_ssl_certificates": False
+    "accept_invalid_ssl_certificates": False,
+    "token": ""
 }
