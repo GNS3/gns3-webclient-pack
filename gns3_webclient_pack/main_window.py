@@ -100,7 +100,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # controller settings
         self._controller_settings = self._local_config.loadSectionSettings("ControllerSettings", CONTROLLER_SETTINGS)
-        self.uiAPIVersionComboBox.setCurrentText(self._controller_settings["api_version"])
+        self.uiAcceptInvalidSSLCertificatesCheckBox.setChecked(self._controller_settings["accept_invalid_ssl_certificates"])
         self.uiProtocolComboBox.setCurrentText(self._controller_settings["protocol"].upper())
         self.uiUserLineEdit.setText(self._controller_settings["username"])
         self.uiPasswordLineEdit.setText(self._controller_settings["password"])
@@ -218,7 +218,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         LocalConfig.instance().saveSectionSettings("CommandsSettings", self._commands_settings)
 
         # save controller settings
-        self._controller_settings["api_version"] = self.uiAPIVersionComboBox.currentText()
+        self._controller_settings["accept_invalid_ssl_certificates"] = self.uiAcceptInvalidSSLCertificatesCheckBox.isChecked()
         self._controller_settings["protocol"] = self.uiProtocolComboBox.currentText().lower()
         self._controller_settings["username"] = self.uiUserLineEdit.text().strip()
         self._controller_settings["password"] = self.uiPasswordLineEdit.text().strip()

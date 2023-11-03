@@ -70,13 +70,14 @@ class QNetworkReplyWatcher(QtCore.QObject):
 
 class PcapStream(QtCore.QObject):
 
-    def __init__(self, command_line, protocol, user, password, api_version, host, port, path, params, url):
+    def __init__(self, command_line, protocol, user, password, accept_invalid_ssl_certificates, host, port, path, params, url):
 
         super().__init__()
         self._network_manager = QtNetwork.QNetworkAccessManager()
         self._command_line = command_line
         self._protocol = protocol
-        self._api_version = api_version
+        self._accept_invalid_ssl_certificates = accept_invalid_ssl_certificates
+        self._api_version = "v2"
         self._host = host
         self._port = port
         self._path = path
@@ -127,15 +128,24 @@ class PcapStream(QtCore.QObject):
         if "project_id" not in self._params or "link_id" not in self._params:
             raise LauncherError("project_id and link_id are required URL parameters!")
 
+        if "protocol" in self._params and self._params["protocol"]:
+            protocol = self._params["protocol"]
+            if self._protocol != protocol:
+                log.warning("Protocol mismatch between URL and controller settings: {} != {}".format(self._protocol, protocol))
+            self._protocol = protocol
+
         if self._protocol == "https" and not QtNetwork.QSslSocket.supportsSsl():
             raise LauncherError("SSL is not supported")
 
-        if self._api_version == "v2":
+        try:
+            self._executeHTTPQuery("GET", "/version", wait=True)
+            log.info("API version 2 detected")
             endpoint = "pcap"
-        else:
-            self._executeHTTPQuery("GET", "/access/users/me", wait=True)
-            # pcap endpoint was renamed in v3
-            endpoint = "capture/stream"
+        except LauncherError:
+            log.info("API version 3 detected")
+            self._api_version = "v3"
+            self._executeHTTPQuery("GET", "/access/users/me", wait=True)  # check if we are authenticated
+            endpoint = "capture/stream"  # pcap endpoint was renamed in v3
 
         url = QtCore.QUrl(
             "{protocol}://{host}:{port}/{api_version}/projects/{project_id}/links/{link_id}/{endpoint}".format(
@@ -151,9 +161,7 @@ class PcapStream(QtCore.QObject):
         request = QtNetwork.QNetworkRequest(url)
         if self._api_version == "v2":
             # v2 of the API has basic HTTP authentication
-            if self._user:
-                url.setUserName(self._user)
-            request = self._addBasicAuth(request)
+            self._addBasicAuth(request)
         else:
             self._addBearerAuth(request)
 
@@ -166,11 +174,12 @@ class PcapStream(QtCore.QObject):
         self._capture_file = QtCore.QTemporaryFile()
         self._capture_file.open(QtCore.QFile.WriteOnly)
         self._capture_file.setAutoRemove(True)
-        self._startPacketCaptureCommand(self._capture_file.fileName())
+        process = self._startPacketCaptureCommand(self._capture_file.fileName())
 
         response.error.connect(qpartial(self._processError, response))
         response.readyRead.connect(qpartial(self._readPcapStreamCallback, response))
         response.finished.connect(self._loop.quit)
+        response.finished.connect(process.kill)
         response.error.connect(self._loop.quit)
 
         if timeout is not None:
@@ -293,7 +302,11 @@ class PcapStream(QtCore.QObject):
         )
 
         request = QtNetwork.QNetworkRequest(QtCore.QUrl(url))
-        request = self._addBearerAuth(request)
+        if self._api_version == "v2":
+            self._addBasicAuth(request)
+        else:
+            self._addBearerAuth(request)
+
         request.setRawHeader(b"User-Agent", "GNS3 WebClient pack v{version}".format(version=__version__).encode())
         body = self._addBodyToRequest(body, request)
 
@@ -321,6 +334,7 @@ class PcapStream(QtCore.QObject):
                     self._handleUnauthorizedRequest(response)
                 else:
                     raise LauncherError(f"{response.errorString()}")
+
 
     def _addBodyToRequest(
             self,
@@ -381,7 +395,7 @@ class PcapStream(QtCore.QObject):
         self._capture_file.write(content)
         self._capture_file.flush()
 
-    def _startPacketCaptureCommand(self, capture_file_path: str) -> None:
+    def _startPacketCaptureCommand(self, capture_file_path: str) -> subprocess.Popen:
         """
         Starts the packet capture command.
         """
@@ -417,6 +431,7 @@ class PcapStream(QtCore.QObject):
                 tail_process = subprocess.Popen(command1, startupinfo=info, stdout=subprocess.PIPE)
                 subprocess.Popen(command2, stdin=tail_process.stdout,stdout=subprocess.PIPE)
                 tail_process.stdout.close()
+                return tail_process
             except OSError as e:
                 raise LauncherError("Cannot start packet capture program {}".format(str(e)))
         else:
@@ -426,18 +441,19 @@ class PcapStream(QtCore.QObject):
             if len(command) == 0:
                 raise LauncherError("No packet capture program configured")
             try:
-                subprocess.Popen(command)
+                process = subprocess.Popen(command)
             except OSError as e:
                 raise LauncherError("Can't start packet capture program {}".format(str(e)))
+            return process
 
     def _handleSSLErrorsSlot(self, reply: QtNetwork.QNetworkReply, ssl_errors: List[QtNetwork.QSslError]) -> None:
         """
         Handle SSL errors
         """
 
-        #if self._accept_insecure_certificate:
-        #    reply.ignoreSslErrors()
-        #    return
+        if self._accept_invalid_ssl_certificates:
+            reply.ignoreSslErrors()
+            return
 
         url = reply.request().url()
         host_port_key = f"{url.host()}:{url.port()}"

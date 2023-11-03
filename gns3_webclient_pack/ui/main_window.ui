@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>634</width>
+    <width>573</width>
     <height>346</height>
    </rect>
   </property>
@@ -214,38 +214,48 @@
         <string>&amp;Controller</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="uiAPIVersionLabel">
-          <property name="text">
-           <string>API version:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="uiUserLabel">
-          <property name="text">
-           <string>Username:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLineEdit" name="uiUserLineEdit"/>
-        </item>
-        <item row="5" column="0">
+        <item row="1" column="0">
          <widget class="QLabel" name="uiPasswordLabel">
           <property name="text">
            <string>Password:</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="uiProtocolLabel">
           <property name="text">
            <string>Protocol:</string>
           </property>
          </widget>
         </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="uiUserLabel">
+          <property name="text">
+           <string>Username:</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="1">
+         <widget class="QLineEdit" name="uiPasswordLineEdit">
+          <property name="echoMode">
+           <enum>QLineEdit::Password</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="1">
          <widget class="QComboBox" name="uiProtocolComboBox">
           <item>
            <property name="text">
@@ -260,38 +270,14 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QComboBox" name="uiAPIVersionComboBox">
-          <item>
-           <property name="text">
-            <string>v2</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>v3</string>
-           </property>
-          </item>
-         </widget>
+         <widget class="QLineEdit" name="uiUserLineEdit"/>
         </item>
-        <item row="5" column="1">
-         <widget class="QLineEdit" name="uiPasswordLineEdit">
-          <property name="echoMode">
-           <enum>QLineEdit::Password</enum>
+        <item row="3" column="0" colspan="2">
+         <widget class="QCheckBox" name="uiAcceptInvalidSSLCertificatesCheckBox">
+          <property name="text">
+           <string>Accept invalid SSL certificates</string>
           </property>
          </widget>
-        </item>
-        <item row="6" column="1">
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </widget>
@@ -327,7 +313,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>634</width>
+     <width>573</width>
      <height>22</height>
     </rect>
    </property>

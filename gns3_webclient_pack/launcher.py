@@ -191,13 +191,11 @@ def launcher(argv):
         command_line = command_settings["pcap_command"]
         controller_settings = local_config.loadSectionSettings("ControllerSettings", CONTROLLER_SETTINGS)
         protocol = controller_settings["protocol"]
+        accept_invalid_ssl_certificates = controller_settings["accept_invalid_ssl_certificates"]
         user = controller_settings["username"]
         password = controller_settings["password"]
-        api_version = controller_settings["api_version"]
-        log.info('Launching PCAP command: "{}" with protocol={}, user={} and API version {}'.format(
-            command_line, protocol, user, api_version)
-        )
-        pcap_stream = PcapStream(command_line, protocol, user, password, api_version, **url_data)
+        log.info('Launching PCAP command: "{}"'.format(command_line))
+        pcap_stream = PcapStream(command_line, protocol, user, password, accept_invalid_ssl_certificates, **url_data)
         pcap_stream.start()
         return
     else:

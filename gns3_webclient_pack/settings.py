@@ -281,8 +281,8 @@ CUSTOM_COMMANDS_SETTINGS = {
 }
 
 CONTROLLER_SETTINGS = {
-    "api_version": "v2",
-    "protocol": "http",
     "username": "admin",
-    "password": "admin"
+    "password": "admin",
+    "protocol": "http",
+    "accept_invalid_ssl_certificates": False
 }
