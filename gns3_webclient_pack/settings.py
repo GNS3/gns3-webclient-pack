@@ -279,3 +279,11 @@ CUSTOM_COMMANDS_SETTINGS = {
     "vnc": {},
     "spice": {}
 }
+
+CONTROLLER_SETTINGS = {
+    "username": "admin",
+    "password": "admin",
+    "protocol": "http",
+    "accept_invalid_ssl_certificates": False,
+    "token": ""
+}

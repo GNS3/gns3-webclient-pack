@@ -25,12 +25,12 @@ import urllib.parse
 import datetime
 
 try:
-    from gns3_webclient_pack.qt import QtCore, QtGui, QtWidgets
+    from gns3_webclient_pack.qt import QtCore, QtGui, QtWidgets, QtNetwork
 except ImportError:
     raise SystemExit("Can't import Qt modules: Qt and/or PyQt is probably not installed correctly...")
 
 from gns3_webclient_pack.local_config import LocalConfig
-from gns3_webclient_pack.settings import COMMANDS_SETTINGS
+from gns3_webclient_pack.settings import COMMANDS_SETTINGS, CONTROLLER_SETTINGS
 from gns3_webclient_pack.version import __version__
 from gns3_webclient_pack.utils.bring_to_front import bring_window_to_front_from_pid
 from gns3_webclient_pack.application import Application
@@ -175,22 +175,28 @@ def launcher(argv):
         raise LauncherError("Cannot parse URL '{}': {}".format(argv, e))
 
     local_config = LocalConfig.instance()
-    settings = local_config.loadSectionSettings("CommandsSettings", COMMANDS_SETTINGS)
+    command_settings = local_config.loadSectionSettings("CommandsSettings", COMMANDS_SETTINGS)
     if url.scheme == "gns3+telnet":
-        command_line = settings["telnet_command"]
+        command_line = command_settings["telnet_command"]
         log.info('Launching Telnet command: "{}"'.format(command_line))
     elif url.scheme == "gns3+vnc":
         if url.port and url.port < 5900:
             raise LauncherError("VNC requires a port superior or equal to 5900, current port is '{}'".format(url.port))
-        command_line = settings["vnc_command"]
+        command_line = command_settings["vnc_command"]
         log.info('Launching VNC command: "{}"'.format(command_line))
     elif url.scheme == "gns3+spice":
-        command_line = settings["spice_command"]
+        command_line = command_settings["spice_command"]
         log.info('Launching SPICE command: "{}"'.format(command_line))
     elif url.scheme == "gns3+pcap":
-        command_line = settings["pcap_command"]
+        command_line = command_settings["pcap_command"]
+        controller_settings = local_config.loadSectionSettings("ControllerSettings", CONTROLLER_SETTINGS)
+        protocol = controller_settings["protocol"]
+        accept_invalid_ssl_certificates = controller_settings["accept_invalid_ssl_certificates"]
+        jwt_token = controller_settings["token"]
+        user = controller_settings["username"]
+        password = controller_settings["password"]
         log.info('Launching PCAP command: "{}"'.format(command_line))
-        pcap_stream = PcapStream(command_line, **url_data)
+        pcap_stream = PcapStream(command_line, protocol, user, password, jwt_token, accept_invalid_ssl_certificates, **url_data)
         pcap_stream.start()
         return
     else:
@@ -236,6 +242,16 @@ def main():
     configure_logging(logging.INFO)
     app = Application(sys.argv)
 
+    if QtNetwork.QSslSocket.supportsSsl():
+        log.info(f"SSL is supported, version: {QtNetwork.QSslSocket().sslLibraryBuildVersionString()}")
+
+    try:
+        import truststore
+        truststore.inject_into_ssl()
+        log.info("Using system certificate store for SSL connections")
+    except ImportError:
+        pass
+
     url_open_requests = []
     if sys.platform.startswith("darwin"):
 
@@ -266,7 +282,7 @@ def main():
                 subprocess.Popen(["gns3-webclient-config"], env=os.environ)
                 sys.exit(0)
         except (OSError, subprocess.SubprocessError) as e:
-            QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "Cannot start the WebClient config: {}".format(e))
+            QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher {}".format(__version__), "Cannot start the WebClient config: {}".format(e))
             sys.exit(1)
 
     current_year = datetime.date.today().year
@@ -284,10 +300,10 @@ def main():
             program = sys.executable
         else:
             program = __file__
-        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "usage: {} <url>".format(program))
+        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher {}".format(__version__), "usage: {} <url>".format(program))
         raise SystemExit("usage: {} <url>".format(program))
     except LauncherError as e:
-        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher", "{}".format(e))
+        QtWidgets.QMessageBox.critical(None, "GNS3 Command launcher {}".format(__version__), "{}".format(e))
         log.critical("Could not launch using URL: {}".format(e))
         raise SystemExit("{}".format(e))
 

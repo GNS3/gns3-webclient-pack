@@ -23,12 +23,12 @@ import logging
 import sys
 
 from .local_config import LocalConfig
-from .qt import QtGui, QtCore, QtWidgets
+from .qt import QtGui, QtCore, QtWidgets, QtNetwork
 from .ui.main_window_ui import Ui_MainWindow
 from .dialogs.about_dialog import AboutDialog
 from .dialogs.command_dialog import CommandDialog
 from .utils.install_mime_types import install_mime_types
-from .settings import (GENERAL_SETTINGS, COMMANDS_SETTINGS)
+from .settings import (GENERAL_SETTINGS, COMMANDS_SETTINGS, CONTROLLER_SETTINGS)
 
 log = logging.getLogger(__name__)
 
@@ -45,6 +45,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         self._settings = {}
         self._commands_settings = {}
+        self._controller_settings = {}
         self.setupUi(self)
         self.resize(self.width(), self.minimumHeight())
 
@@ -85,6 +86,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
 
         self._settings = self._local_config.loadSectionSettings("GeneralSettings", GENERAL_SETTINGS)
+
+        # command settings
         self._commands_settings = self._local_config.loadSectionSettings("CommandsSettings", COMMANDS_SETTINGS)
         self.uiTelnetCommandLineEdit.setText(self._commands_settings["telnet_command"])
         self.uiVNCCommandLineEdit.setText(self._commands_settings["vnc_command"])
@@ -94,6 +97,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.uiTelnetCommandLineEdit.textChanged.connect(self._commandChangedSlot)
         self.uiVNCCommandLineEdit.textChanged.connect(self._commandChangedSlot)
         self.uiSPICECommandLineEdit.textChanged.connect(self._commandChangedSlot)
+
+        # controller settings
+        self._controller_settings = self._local_config.loadSectionSettings("ControllerSettings", CONTROLLER_SETTINGS)
+        self.uiAcceptInvalidSSLCertificatesCheckBox.setChecked(self._controller_settings["accept_invalid_ssl_certificates"])
+        self.uiProtocolComboBox.setCurrentText(self._controller_settings["protocol"].upper())
+        self.uiUserLineEdit.setText(self._controller_settings["username"])
+        self.uiPasswordLineEdit.setText(self._controller_settings["password"])
 
     def settings(self):
         """
@@ -200,11 +210,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Save the commands in the settings file.
         """
 
+        # save command settings
         self._commands_settings["telnet_command"] = self.uiTelnetCommandLineEdit.text().strip()
         self._commands_settings["vnc_command"] = self.uiVNCCommandLineEdit.text().strip()
         self._commands_settings["spice_command"] = self.uiSPICECommandLineEdit.text().strip()
         self._commands_settings["pcap_command"] = self.uiPacketCaptureCommandLineEdit.text().strip()
         LocalConfig.instance().saveSectionSettings("CommandsSettings", self._commands_settings)
+
+        # save controller settings
+        self._controller_settings["accept_invalid_ssl_certificates"] = self.uiAcceptInvalidSSLCertificatesCheckBox.isChecked()
+        self._controller_settings["protocol"] = self.uiProtocolComboBox.currentText().lower()
+        self._controller_settings["username"] = self.uiUserLineEdit.text().strip()
+        self._controller_settings["password"] = self.uiPasswordLineEdit.text().strip()
+        LocalConfig.instance().saveSectionSettings("ControllerSettings", self._controller_settings)
+
+        if self._controller_settings["protocol"] == "https" and not QtNetwork.QSslSocket.supportsSsl():
+            QtWidgets.QMessageBox.critical(self, "SSL", "SSL is not supported")
+
         self.setSettings(self._settings)
         self._commands_saved = True
 
@@ -217,6 +239,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.uiVNCCommandLineEdit.setText(COMMANDS_SETTINGS["vnc_command"])
         self.uiSPICECommandLineEdit.setText(COMMANDS_SETTINGS["spice_command"])
         self.uiPacketCaptureCommandLineEdit.setText(COMMANDS_SETTINGS["pcap_command"])
+        self.uiUserLineEdit.setText(CONTROLLER_SETTINGS["username"])
+        self.uiPasswordLineEdit.setText(CONTROLLER_SETTINGS["password"])
 
     def closeEvent(self, event):
         """
