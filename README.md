@@ -110,20 +110,26 @@ Note: the GNS3 all-in-one installer already does this.
 
 ### Linux
 
-Create the folders as needed.
+First, start bash as root:
 
-`sudo mkdir -p /etc/opt/chrome/policies/managed/`
-
-Create an empty JSON file.
-
-`sudo touch /etc/opt/chrome/policies/managed/managed_policies.json`
-
-Add the following content in this JSON file.
-
+```bash
+sudo bash
 ```
+
+Then execute the following to allow Chrome to open the GNS3 protocol handlers.
+
+```bash
+mkdir -p /etc/opt/chrome/policies/{managed,recommended}
+cat <<EOF >/etc/opt/chrome/policies/managed/allow_gns3_protocols.json
 {
-  "ExternalProtocolDialogShowAlwaysOpenCheckbox": true
+  "URLAllowlist": [
+    "gns3+telnet:*",
+    "gns3+vnc:*",
+    "gns3+spice:*", 
+    "gns3+pcap:*" 
+  ]
 }
+EOF
 ```
 
 ### MacOS
