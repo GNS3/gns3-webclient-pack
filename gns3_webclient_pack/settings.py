@@ -37,7 +37,7 @@ if sys.platform.startswith("win"):
         program_files_x86 = program_files = os.environ["PROGRAMFILES"]
 
     PRECONFIGURED_TELNET_COMMANDS = {'Putty (normal standalone version)': 'putty_standalone.exe -telnet {host} {port} -loghost "{name}"',
-                                     'Putty (custom deprecated version)': 'putty.exe -telnet {host} {port} -wt "{name}" -gns3 5 -skin 4',
+                                     'KiTTY': r'kitty -title "{name}" telnet://{host} {port}',
                                      'MobaXterm': r'"{}\Mobatek\MobaXterm Personal Edition\MobaXterm.exe" -newtab "telnet {{host}} {{port}}"'.format(program_files_x86),
                                      'Royal TS V3': r'{}\code4ward.net\Royal TS V3\RTS3App.exe /connectadhoc:{{host}} /adhoctype:terminal /p:IsTelnetConnection="true" /p:ConnectionType="telnet;Telnet Connection" /p:Port="{{port}}" /p:Name="{{name}}"'.format(program_files),
                                      'Royal TS V5': r'"{}\Royal TS V5\RoyalTS.exe" /protocol:terminal /using:adhoc /uri:"{{host}}" /property:Port="{{port}}" /property:IsTelnetConnection="true" /property:Name="{{name}}"'.format(program_files_x86),
@@ -48,7 +48,7 @@ if sys.platform.startswith("win"):
                                      'Telnet': 'telnet {host} {port}',
                                      'Xshell 4': r'"{}\NetSarang\Xshell 4\xshell.exe" -url telnet://{{host}}:{{port}}'.format(program_files_x86),
                                      'Xshell 5': r'"{}\NetSarang\Xshell 5\xshell.exe" -url telnet://{{host}}:{{port}} -newtab {{name}}'.format(program_files_x86),
-                                     'Windows Terminal': r'wt.exe -w 1 new-tab --title {name} telnet {host} {port}',
+                                     'Windows Terminal': r'wt.exe -w 1 new-tab --suppressApplicationTitle --title {name} telnet {host} {port}',
                                      'ZOC 6': r'"{}\ZOC6\zoc.exe" "/TELNET:{{host}}:{{port}}" /TABBED "/TITLE:{{name}}"'.format(program_files_x86)}
 
     # default on Windows
