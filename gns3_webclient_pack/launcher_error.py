@@ -19,11 +19,15 @@
 
 class LauncherError(Exception):
 
-    def __init__(self, message):
+    def __init__(self, message, status=None):
         super().__init__(message)
         if isinstance(message, Exception):
             message = str(message)
         self._message = message
+        self._status = status
+
+    def status(self):
+        return self._status
 
     def __repr__(self):
         return self._message
