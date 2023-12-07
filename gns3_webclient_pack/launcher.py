@@ -94,7 +94,7 @@ class Command(object):
 
         if sys.platform.startswith("win"):
             # use the string on Windows
-            process = subprocess.call(command, env=os.environ)
+            process = subprocess.Popen(command, env=os.environ)
         else:
             # use arguments on other platforms
             try:
@@ -108,7 +108,7 @@ class Command(object):
                 # inject gnome-terminal environment variables
                 if "GNOME_TERMINAL_SERVICE" not in env or "GNOME_TERMINAL_SCREEN" not in env:
                     env.update(self.gnome_terminal_env())
-            process = subprocess.call(args, env=env)
+            process = subprocess.Popen(args, env=env)
 
         if sys.platform.startswith("win") and not hasattr(sys, '_called_from_test'):
             # bring the launched application to the front (Windows only)

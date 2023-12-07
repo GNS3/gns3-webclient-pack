@@ -143,11 +143,14 @@ class PcapStream(QtCore.QObject):
             self._executeHTTPQuery("GET", "/version", wait=True)
             log.info("API version 2 detected")
             endpoint = "pcap"
-        except LauncherError:
-            log.info("API version 3 detected")
-            self._api_version = "v3"
-            self._executeHTTPQuery("GET", "/access/users/me", wait=True)  # check if we are authenticated
-            endpoint = "capture/stream"  # pcap endpoint was renamed in v3
+        except LauncherError as e:
+            if e.status() == 404:
+                log.info("API version 3 detected")
+                self._api_version = "v3"
+                self._executeHTTPQuery("GET", "/access/users/me", wait=True)  # check if we are authenticated
+                endpoint = "capture/stream"  # pcap endpoint was renamed in v3
+            else:
+                raise
 
         url = QtCore.QUrl(
             "{protocol}://{host}:{port}/{api_version}/projects/{project_id}/links/{link_id}/{endpoint}".format(
@@ -340,7 +343,7 @@ class PcapStream(QtCore.QObject):
                 if status == 401 and response.rawHeader(b"WWW-Authenticate") == b"Bearer":
                     self._handleUnauthorizedRequest(response)
                 else:
-                    raise LauncherError(f"{response.errorString()}")
+                    raise LauncherError(f"{response.errorString()}", status=status)
 
 
     def _addBodyToRequest(

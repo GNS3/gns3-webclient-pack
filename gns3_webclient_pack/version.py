@@ -23,7 +23,7 @@
 # or negative for a release candidate or beta (after the base version
 # number has been incremented)
 
-__version__ = "1.0.0b5"
+__version__ = "1.0.0b6"
 __version_info__ = (1, 0, 0, -99)
 
 #  Add the commit ID if this is a development version
