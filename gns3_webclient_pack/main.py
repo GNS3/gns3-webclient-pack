@@ -91,9 +91,9 @@ def checks():
         frozen_dirs = [frozen_dir]
         os.environ["PATH"] = os.pathsep.join(frozen_dirs) + os.pathsep + os.environ.get("PATH", "")
 
-    # We only support Python 3 version >= 3.4
-    if sys.version_info < (3, 4):
-        raise SystemExit("Python 3.4 or higher is required")
+    # We only support Python 3 version >= 3.8
+    if sys.version_info < (3, 8):
+        raise SystemExit("Python 3.8 or higher is required")
 
     # We only support Qt version >= 5.6.0
     if parse_version(QtCore.QT_VERSION_STR) < parse_version("5.6.0"):
