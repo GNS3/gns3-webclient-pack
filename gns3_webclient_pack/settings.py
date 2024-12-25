@@ -168,7 +168,7 @@ else:
             DEFAULT_TELNET_COMMAND = PRECONFIGURED_TELNET_COMMANDS["Xfce4 Terminal"]
         elif find_desktop("lxde", "lxqt"):
             DEFAULT_TELNET_COMMAND = PRECONFIGURED_TELNET_COMMANDS["LXTerminal"]
-        elif distro.name() in ["Debian", "Ubuntu", "LinuxMint"]:
+        elif distro.name() in ["Debian", "Ubuntu", "Linux Mint"]:
             DEFAULT_TELNET_COMMAND = PRECONFIGURED_TELNET_COMMANDS["Gnome Terminal"]
         elif shutil.which("x-terminal-emulator"):
             DEFAULT_TELNET_COMMAND = 'x-terminal-emulator -T "{name}" -e "telnet {host} {port}"'
