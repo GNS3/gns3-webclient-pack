@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.0.0b7 16/12/2025
+
+* PyQt6 migration
+* Support for Python 3.13 and 3.14
+
+## 1.0.0b6 07/12/2023
+
+* Add KiTTY on Windows and add --suppressApplicationTitle for Windows terminal
+* Replace subprocess.call() by subprocess.Popen()
+* Fix bring window to front on Windows
+* Fix API detection
+
 ## 1.0.0b5 03/11/2023
 
 * SSL and controller authentication support (for packet captures)
