@@ -73,12 +73,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.uiSPICECommandPushButton.clicked.connect(self._spiceCommandSlot)
         self.uiPacketCaptureCommandPushButton.clicked.connect(self._packetCaptureCommandSlot)
 
-        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Close).clicked.connect(self.close)
-        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self._applySlot)
-        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Reset).clicked.connect(self._resetSlot)
+        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Close).clicked.connect(self.close)
+        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Apply).clicked.connect(self._applySlot)
+        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Reset).clicked.connect(self._resetSlot)
 
         # custom button icons
-        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Reset).setIcon(QtGui.QIcon(":/icons/reload.svg"))
+        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Reset).setIcon(QtGui.QIcon(":/icons/reload.svg"))
 
     def _loadSettings(self):
         """
@@ -156,7 +156,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         dialog = AboutDialog(self)
         dialog.show()
-        dialog.exec_()
+        dialog.exec()
 
     def _commandChangedSlot(self):
         """
@@ -251,10 +251,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if self._commands_saved is False:
             reply = QtWidgets.QMessageBox.question(self, "Unsaved changes", "Save changes before closing?",
-                                                   QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Cancel)
-            if reply == QtWidgets.QMessageBox.Yes:
+                                                   QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No | QtWidgets.QMessageBox.StandardButton.Cancel)
+            if reply == QtWidgets.QMessageBox.StandardButton.Yes:
                 self._applySlot()
-            elif reply == QtWidgets.QMessageBox.Cancel:
+            elif reply == QtWidgets.QMessageBox.StandardButton.Cancel:
                 event.ignore()
                 return
 

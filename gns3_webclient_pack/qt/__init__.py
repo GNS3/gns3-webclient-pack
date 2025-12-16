@@ -28,11 +28,11 @@ import inspect
 import functools
 
 try:
-    from PyQt5 import sip
+    from PyQt6 import sip
 except ImportError:
     import sip
 
-from PyQt5 import QtCore, QtGui, QtNetwork, QtWidgets
+from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets
 sys.modules[__name__ + '.QtCore'] = QtCore
 sys.modules[__name__ + '.QtGui'] = QtGui
 sys.modules[__name__ + '.QtNetwork'] = QtNetwork

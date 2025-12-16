@@ -29,16 +29,9 @@ class Application(QtWidgets.QApplication):
 
     urlOpenedSignal = QtCore.pyqtSignal(str)
 
-    def __init__(self, argv, hdpi=True):
+    def __init__(self, argv):
 
         self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
-        if hdpi:
-            self.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-            self.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps)
-        else:
-            log.info("HDPI mode is disabled")
-            self.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
-
         super().__init__(argv)
 
         # this info is necessary for QSettings

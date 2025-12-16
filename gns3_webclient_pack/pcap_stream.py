@@ -64,7 +64,7 @@ class QNetworkReplyWatcher(QtCore.QObject):
         reply.finished.connect(loop.quit)
 
         if not loop.isRunning():
-            if loop.exec_() == 1:
+            if loop.exec() == 1:
                 raise LauncherError(f"Request to '{reply.url().toString()}' timed out after {timeout} seconds")
 
         if timeout and timer.isActive():
@@ -177,7 +177,7 @@ class PcapStream(QtCore.QObject):
             raise LauncherError("Error with network manager: {}".format(e))
 
         self._capture_file = QtCore.QTemporaryFile()
-        self._capture_file.open(QtCore.QFile.WriteOnly)
+        self._capture_file.open(QtCore.QIODeviceBase.OpenModeFlag.WriteOnly)
         self._capture_file.setAutoRemove(True)
         process = self._startPacketCaptureCommand(self._capture_file.fileName())
 
@@ -191,26 +191,26 @@ class PcapStream(QtCore.QObject):
            QtCore.QTimer.singleShot(timeout * 1000, qpartial(self._timeoutSlot, response, timeout))
 
         if not self._loop.isRunning():
-            self._loop.exec_()
+            self._loop.exec()
 
     def _processError(self, response: QtNetwork.QNetworkReply, error_code: int) -> None:
         """
         Process error when reading PCAP stream.
         """
 
-        if error_code != QtNetwork.QNetworkReply.NoError:
+        if error_code != QtNetwork.QNetworkReply.NetworkError.NoError:
             error_message = response.errorString()
 
             if error_code < 200 or error_code == 403:
-                if error_code == QtNetwork.QNetworkReply.OperationCanceledError:  # It's legit to cancel do not disconnect
+                if error_code == QtNetwork.QNetworkReply.NetworkError.OperationCanceledError:  # It's legit to cancel do not disconnect
                     error_message = "Operation timeout"  # It's clearer than cancel because cancel is triggered by us when we timeout
-                elif error_code == QtNetwork.QNetworkReply.NetworkSessionFailedError:
+                elif error_code == QtNetwork.QNetworkReply.NetworkError.NetworkSessionFailedError:
                     # ignore the network session failed error to let the network manager recover from it
                     return
                 return self._showError("Error while connecting to PCAP stream: {}".format(error_message))
 
             else:
-                status = response.attribute(QtNetwork.QNetworkRequest.HttpStatusCodeAttribute)
+                status = response.attribute(QtNetwork.QNetworkRequest.Attribute.HttpStatusCodeAttribute)
                 if status == 401:
                     return self._showError("Unauthorized request to PCAP stream: {}".format(error_message))
 
@@ -219,7 +219,7 @@ class PcapStream(QtCore.QObject):
                 # Some time antivirus intercept our query and reply with garbage content
             except UnicodeError:
                 body = None
-            content_type = response.header(QtNetwork.QNetworkRequest.ContentTypeHeader)
+            content_type = response.header(QtNetwork.QNetworkRequest.KnownHeaders.ContentTypeHeader)
 
             if body and content_type == "application/json":
                 try:
@@ -243,7 +243,7 @@ class PcapStream(QtCore.QObject):
             login_dialog.setUsername(self._user)
         login_dialog.show()
         login_dialog.raise_()
-        if login_dialog.exec_():
+        if login_dialog.exec():
             username = login_dialog.getUsername()
             password = login_dialog.getPassword()
         return username, password
@@ -327,8 +327,8 @@ class PcapStream(QtCore.QObject):
 
         if wait:
             QNetworkReplyWatcher().waitForReply(response, timeout)
-            if response.error() == QtNetwork.QNetworkReply.NoError:
-                content_type = response.header(QtNetwork.QNetworkRequest.ContentTypeHeader)
+            if response.error() == QtNetwork.QNetworkReply.NetworkError.NoError:
+                content_type = response.header(QtNetwork.QNetworkRequest.KnownHeaders.ContentTypeHeader)
                 try:
                     content = bytes(response.readAll())
                     content = content.decode("utf-8").strip(" \0\n\t")
@@ -339,7 +339,7 @@ class PcapStream(QtCore.QObject):
                     raise LauncherError(f"Could not read data with content type '{content_type}' returned from"
                         f" '{response.url().toString()}': {e}")
             else:
-                status = response.attribute(QtNetwork.QNetworkRequest.HttpStatusCodeAttribute)
+                status = response.attribute(QtNetwork.QNetworkRequest.Attribute.HttpStatusCodeAttribute)
                 if status == 401 and response.rawHeader(b"WWW-Authenticate") == b"Bearer":
                     self._handleUnauthorizedRequest(response)
                 else:
@@ -366,9 +366,9 @@ class PcapStream(QtCore.QObject):
             data = QtCore.QByteArray(body.encode())
             body = QtCore.QBuffer(self)
             body.setData(data)
-            body.open(QtCore.QIODevice.ReadOnly)
-            request.setHeader(QtNetwork.QNetworkRequest.ContentTypeHeader, "application/json")
-            request.setHeader(QtNetwork.QNetworkRequest.ContentLengthHeader, str(data.size()))
+            body.open(QtCore.QIODeviceBase.OpenModeFlag.ReadOnly)
+            request.setHeader(QtNetwork.QNetworkRequest.KnownHeaders.ContentTypeHeader, "application/json")
+            request.setHeader(QtNetwork.QNetworkRequest.KnownHeaders.ContentLengthHeader, str(data.size()))
             return body
 
 
@@ -379,7 +379,7 @@ class PcapStream(QtCore.QObject):
 
         # We check if we received HTTP headers
         if not sip.isdeleted(response) and response.isRunning() and not len(response.rawHeaderList()) > 0:
-            if not response.error() != QtNetwork.QNetworkReply.NoError:
+            if not response.error() != QtNetwork.QNetworkReply.NetworkError.NoError:
                 response.abort()
                 raise LauncherError("Timeout after {} seconds for request {}".format(timeout, response.url().toString()))
 
@@ -389,15 +389,15 @@ class PcapStream(QtCore.QObject):
         Process a packet received on the notification feed.
         """
 
-        if response.error() != QtNetwork.QNetworkReply.NoError:
+        if response.error() != QtNetwork.QNetworkReply.NetworkError.NoError:
             return
 
         # HTTP error
-        status = response.attribute(QtNetwork.QNetworkRequest.HttpStatusCodeAttribute)
+        status = response.attribute(QtNetwork.QNetworkRequest.Attribute.HttpStatusCodeAttribute)
         if status >= 300:
             return
 
-        content_type = response.header(QtNetwork.QNetworkRequest.ContentTypeHeader)
+        content_type = response.header(QtNetwork.QNetworkRequest.KnownHeaders.ContentTypeHeader)
         if content_type != "application/vnd.tcpdump.pcap":
             return
 
@@ -483,14 +483,14 @@ class PcapStream(QtCore.QObject):
         msgbox.setText(f"This server could not prove that it is {url.host()}:{url.port()}. Please carefully examine the certificate to make sure the server can be trusted.")
         msgbox.setInformativeText(f"{ssl_errors[0].errorString()}")
         msgbox.setDetailedText(peer_cert.toText())
-        msgbox.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        msgbox.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         connect_button = QtWidgets.QPushButton(f"&Connect to {url.host()}:{url.port()}", msgbox)
-        msgbox.addButton(connect_button, QtWidgets.QMessageBox.YesRole)
+        msgbox.addButton(connect_button, QtWidgets.QMessageBox.ButtonRole.YesRole)
         abort_button = QtWidgets.QPushButton("&Abort", msgbox)
-        msgbox.addButton(abort_button, QtWidgets.QMessageBox.RejectRole)
+        msgbox.addButton(abort_button, QtWidgets.QMessageBox.ButtonRole.RejectRole)
         msgbox.setDefaultButton(abort_button)
-        msgbox.setIcon(QtWidgets.QMessageBox.Critical)
-        msgbox.exec_()
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Critical)
+        msgbox.exec()
 
         if msgbox.clickedButton() == connect_button:
             self._ssl_exceptions[host_port_key] = digest
