@@ -273,7 +273,7 @@ def main():
         QtCore.QTimer.singleShot(2000, loop.quit)
 
         if not loop.isRunning():
-            loop.exec_()
+            loop.exec()
 
         try:
             if not url_open_requests and hasattr(sys, "frozen"):

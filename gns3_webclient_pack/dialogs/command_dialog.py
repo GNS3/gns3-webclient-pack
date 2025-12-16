@@ -52,10 +52,10 @@ class CommandDialog(QtWidgets.QDialog, Ui_uiCommandDialog):
         self.uiCommandPlainTextEdit.textChanged.connect(self.textChangedSlot)
         self.uiSavePushButton.clicked.connect(self._savePushButtonClickedSlot)
         self.uiRemovePushButton.clicked.connect(self._removePushButtonClickedSlot)
-        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Help).clicked.connect(self._helpSlot)
+        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Help).clicked.connect(self._helpSlot)
 
         # custom button icons
-        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.Help).setIcon(QtGui.QIcon(":/icons/help.svg"))
+        self.uiButtonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Help).setIcon(QtGui.QIcon(":/icons/help.svg"))
 
         self._refreshList()
 
@@ -113,7 +113,7 @@ class CommandDialog(QtWidgets.QDialog, Ui_uiCommandDialog):
         Save a custom command to the list
         """
 
-        name, ok = QtWidgets.QInputDialog.getText(self, "Add a command", "Command name:", QtWidgets.QLineEdit.Normal)
+        name, ok = QtWidgets.QInputDialog.getText(self, "Add a command", "Command name:", QtWidgets.QLineEdit.EchoMode.Normal)
         command = self.uiCommandPlainTextEdit.toPlainText().strip()
         if ok and len(command) > 0:
             if command not in self._consoles.values():
@@ -143,7 +143,7 @@ class CommandDialog(QtWidgets.QDialog, Ui_uiCommandDialog):
     def getCommand(parent, console_type="telnet", current=None):
         dialog = CommandDialog(parent, console_type=console_type, current=current)
         dialog.show()
-        if dialog.exec_():
+        if dialog.exec():
             return True, dialog.uiCommandPlainTextEdit.toPlainText().replace("\n", " ")
         return False, None
 
@@ -155,4 +155,3 @@ if __name__ == '__main__':
     (ok, command) = CommandDialog.getCommand(main, console_type="telnet", current=list(PRECONFIGURED_TELNET_COMMANDS.items())[0][1])
     print(ok)
     print(command)
-
