@@ -133,6 +133,7 @@ elif sys.platform.startswith("darwin"):
 else:
     PRECONFIGURED_TELNET_COMMANDS = {'Xterm': 'xterm -T "{name}" -e "telnet {host} {port}"',
                                      'Putty': 'putty -telnet {host} {port} -title "{name}" -sl 2500 -fg SALMON1 -bg BLACK',
+                                     'Ptyxis': 'ptyxis --tab --title="{name}" -- telnet {host} {port}',
                                      'Gnome Terminal': 'gnome-terminal --tab -t "{name}" -- telnet {host} {port}',
                                      'Xfce4 Terminal': 'xfce4-terminal --tab -T "{name}" -e "telnet {host} {port}"',
                                      'ROXTerm': 'roxterm -n "{name}" --tab -e "telnet {host} {port}"',
@@ -159,7 +160,10 @@ else:
 
 
         if find_desktop("gnome", "unity", "cinnamon"):
-            DEFAULT_TELNET_COMMAND = PRECONFIGURED_TELNET_COMMANDS["Gnome Terminal"]
+            if shutil.which("ptyxis"):
+                DEFAULT_TELNET_COMMAND = PRECONFIGURED_TELNET_CONSOLE_COMMANDS["Ptyxis"]
+            else:
+                DEFAULT_TELNET_COMMAND = PRECONFIGURED_TELNET_COMMANDS["Gnome Terminal"]
         elif find_desktop("kde"):
             DEFAULT_TELNET_COMMAND = PRECONFIGURED_TELNET_COMMANDS["KDE Konsole"]
         elif find_desktop("mate"):
