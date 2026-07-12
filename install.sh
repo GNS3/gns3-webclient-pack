@@ -40,11 +40,11 @@ echo "Detected Linux distribution: $ID $VERSION_ID (${ID_LIKE:-"none"})"
 for distro_id in $ID $ID_LIKE; do
 	case "$distro_id" in
 		debian|ubuntu)
-			sudo apt-get install -y python3 python3-pyqt5 telnet vinagre virt-viewer wireshark
+			sudo apt-get install -y python3 python3-pyqt5 telnet xtightvncviewer virt-viewer wireshark
 			do_install
 			;;
 		arch|archlinux|manjaro)
-			sudo pacman -S python python-pyqt5 qt5-websockets vinagre virt-viewer wireshark-qt
+			sudo pacman -S python python-pyqt5 qt5-websockets virt-viewer wireshark-qt
 			do_install
 			;;
 		fedora)
@@ -52,7 +52,7 @@ for distro_id in $ID $ID_LIKE; do
 			do_install
 			;;
 		opensuse|suse)
-			sudo zypper install -y python3 python3-pyqt5 telnet vinagre virt-viewer wireshark-ui-qt
+			sudo zypper install -y python3 python3-pyqt5 telnet vxtightvncviewer virt-viewer wireshark-ui-qt
 			do_install
 			;;
 		#centos|CentOS|rhel)
